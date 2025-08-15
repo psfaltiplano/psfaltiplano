@@ -181,8 +181,8 @@
         <button class="tab-button" onclick="openTab('vacinas')">Vacinas</button>
         <button class="tab-button" onclick="openTab('enfermeira')">Enfermeira</button>
         <button class="tab-button" onclick="openTab('psicologa')">Psicóloga</button>
-        <button class="tab-button" onclick="openTab('extra1')">Extra 1</button>
-        <button class="tab-button" onclick="openTab('extra2')">Extra 2</button>
+        <button class="tab-button" onclick="openTab('nutricionista')">Nutricionista</button>
+        <button class="tab-button" onclick="openTab('dentista')">Dentista</button>
         <button class="tab-button" onclick="openTab('novo1')">Novo 1</button>
         <button class="tab-button" onclick="openTab('novo2')">Novo 2</button>
     </div>
@@ -247,34 +247,34 @@
         <ul id="queueListPsicologa" class="queue-list"></ul>
     </div>
 
-    <div id="extra1" class="tab-content">
-        <h2>Fila Extra 1</h2>
+    <div id="nutricionista" class="tab-content">
+        <h2>Fila da Nutricionista</h2>
         <div class="input-section">
-            <label for="patientNameExtra1">Nome do Paciente:</label>
-            <input type="text" id="patientNameExtra1" placeholder="Nome do paciente">
-            <label for="priorityExtra1">Prioridade:</label>
-            <select id="priorityExtra1">
+            <label for="patientNameNutricionista">Nome do Paciente:</label>
+            <input type="text" id="patientNameNutricionista" placeholder="Nome do paciente">
+            <label for="priorityNutricionista">Prioridade:</label>
+            <select id="priorityNutricionista">
                 <option value="normal">Normal</option>
                 <option value="prioridade">Prioridade</option>
             </select>
-            <button onclick="addPatient('extra1')">Adicionar Paciente</button>
+            <button onclick="addPatient('nutricionista')">Adicionar Paciente</button>
         </div>
-        <ul id="queueListExtra1" class="queue-list"></ul>
+        <ul id="queueListNutricionista" class="queue-list"></ul>
     </div>
 
-    <div id="extra2" class="tab-content">
-        <h2>Fila Extra 2</h2>
+    <div id="dentista" class="tab-content">
+        <h2>Fila do Dentista</h2>
         <div class="input-section">
-            <label for="patientNameExtra2">Nome do Paciente:</label>
-            <input type="text" id="patientNameExtra2" placeholder="Nome do paciente">
-            <label for="priorityExtra2">Prioridade:</label>
-            <select id="priorityExtra2">
+            <label for="patientNameDentista">Nome do Paciente:</label>
+            <input type="text" id="patientNameDentista" placeholder="Nome do paciente">
+            <label for="priorityDentista">Prioridade:</label>
+            <select id="priorityDentista">
                 <option value="normal">Normal</option>
                 <option value="prioridade">Prioridade</option>
             </select>
-            <button onclick="addPatient('extra2')">Adicionar Paciente</button>
+            <button onclick="addPatient('dentista')">Adicionar Paciente</button>
         </div>
-        <ul id="queueListExtra2" class="queue-list"></ul>
+        <ul id="queueListDentista" class="queue-list"></ul>
     </div>
 
     <div id="novo1" class="tab-content">
@@ -309,16 +309,86 @@
 
     <script>
         // Objeto para armazenar os contadores de senhas para cada fila
-        const queueCounters = {
+        let queueCounters = {
             medica: { normal: 0, prioridade: 0 },
             vacinas: { normal: 0, prioridade: 0 },
             enfermeira: { normal: 0, prioridade: 0 },
             psicologa: { normal: 0, prioridade: 0 },
-            extra1: { normal: 0, prioridade: 0 },
-            extra2: { normal: 0, prioridade: 0 },
+            nutricionista: { normal: 0, prioridade: 0 },
+            dentista: { normal: 0, prioridade: 0 },
             novo1: { normal: 0, prioridade: 0 },
             novo2: { normal: 0, prioridade: 0 }
         };
+
+        // Função para capitalizar a primeira letra, usada para IDs
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // =================================================================
+        // NOVAS FUNÇÕES PARA SALVAR E CARREGAR DADOS
+        // =================================================================
+
+        /**
+         * Salva o estado atual de todas as filas no localStorage.
+         */
+        function saveState() {
+            const allQueuesData = {};
+            const queueIds = Object.keys(queueCounters);
+
+            queueIds.forEach(id => {
+                const queueList = document.getElementById('queueList' + capitalizeFirstLetter(id));
+                const patients = [];
+                queueList.querySelectorAll('.queue-item').forEach(item => {
+                    const span = item.querySelector('span');
+                    patients.push({
+                        name: span.getAttribute('data-original-name'),
+                        senha: item.getAttribute('data-senha'),
+                        priority: item.getAttribute('data-priority-type'),
+                        attended: item.classList.contains('atendido')
+                    });
+                });
+
+                allQueuesData[id] = {
+                    patients: patients,
+                    counters: queueCounters[id]
+                };
+            });
+
+            localStorage.setItem('queueManagementData', JSON.stringify(allQueuesData));
+        }
+
+        /**
+         * Carrega o estado das filas do localStorage quando a página é aberta.
+         */
+        function loadState() {
+            const savedData = localStorage.getItem('queueManagementData');
+            if (savedData) {
+                const allQueuesData = JSON.parse(savedData);
+                
+                // Atualiza os contadores globais
+                if (allQueuesData.medica) { // Verifica se os dados existem antes de atribuir
+                    queueCounters = Object.keys(allQueuesData).reduce((acc, id) => {
+                        acc[id] = allQueuesData[id].counters;
+                        return acc;
+                    }, {});
+                }
+
+                // Recria os pacientes em cada fila
+                Object.keys(allQueuesData).forEach(id => {
+                    const queueData = allQueuesData[id];
+                    if (queueData.patients) {
+                        queueData.patients.forEach(patientData => {
+                            createPatientListItem(id, patientData);
+                        });
+                    }
+                });
+            }
+        }
+
+        // =================================================================
+        // FUNÇÕES EXISTENTES MODIFICADAS
+        // =================================================================
 
         function openTab(tabName) {
             var i, tabContent, tabButtons;
@@ -334,16 +404,52 @@
             event.currentTarget.classList.add("active");
         }
 
-        function addPatient(queueId) {
-            // Função para capitalizar a primeira letra de uma string
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
-
-            const patientNameInput = document.getElementById('patientName' + capitalizeFirstLetter(queueId));
-            const prioritySelect = document.getElementById('priority' + capitalizeFirstLetter(queueId));
+        /**
+         * Cria e adiciona um item de paciente à lista na tela.
+         * @param {string} queueId - O ID da fila (ex: 'medica').
+         * @param {object} patientData - Objeto com os dados do paciente {name, senha, priority, attended}.
+         */
+        function createPatientListItem(queueId, patientData) {
             const queueList = document.getElementById('queueList' + capitalizeFirstLetter(queueId));
 
+            const listItem = document.createElement('li');
+            listItem.classList.add('queue-item', patientData.priority);
+            listItem.setAttribute('data-priority-type', patientData.priority);
+            listItem.setAttribute('data-senha', patientData.senha); // Armazena a senha no próprio item
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = `${patientData.senha} - ${patientData.name}`;
+            nameSpan.setAttribute('data-original-name', patientData.name);
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.classList.add('actions');
+            actionsDiv.innerHTML = `
+                <button class="mark-attended" onclick="toggleAttended(this)">Atendido</button>
+                <button class="edit-patient" onclick="editPatient(this)">Editar</button>
+                <button class="move-up" onclick="movePatient(this, 'up')">⬆️</button>
+                <button class="move-down" onclick="movePatient(this, 'down')">⬇️</button>
+                <button class="delete-patient" onclick="deletePatient(this)">Excluir</button>
+            `;
+
+            listItem.appendChild(nameSpan);
+            listItem.appendChild(actionsDiv);
+            
+            // Se o paciente já foi atendido, aplica o estilo
+            if (patientData.attended) {
+                listItem.classList.add('atendido');
+                const button = actionsDiv.querySelector('.mark-attended');
+                button.textContent = 'Desfazer';
+                button.style.backgroundColor = '#ffc107';
+                button.style.color = '#333';
+            }
+
+            queueList.appendChild(listItem);
+        }
+
+        function addPatient(queueId) {
+            const patientNameInput = document.getElementById('patientName' + capitalizeFirstLetter(queueId));
+            const prioritySelect = document.getElementById('priority' + capitalizeFirstLetter(queueId));
+            
             const patientName = patientNameInput.value.trim();
             const priority = prioritySelect.value;
 
@@ -361,31 +467,17 @@
                 senha = `${queueCounters[queueId].prioridade}P`;
             }
 
-            const listItem = document.createElement('li');
-            listItem.classList.add('queue-item', priority);
-            listItem.setAttribute('data-priority-type', priority); // Adiciona um atributo para o tipo de prioridade
-
-            // O span que exibirá o nome e a senha
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = `${senha} - ${patientName}`;
-            nameSpan.setAttribute('data-senha', senha); // Armazena a senha para uso futuro
-            nameSpan.setAttribute('data-original-name', patientName); // Armazena o nome original
-
-            const actionsDiv = document.createElement('div');
-            actionsDiv.classList.add('actions');
-            actionsDiv.innerHTML = `
-                <button class="mark-attended" onclick="toggleAttended(this)">Atendido</button>
-                <button class="edit-patient" onclick="editPatient(this)">Editar</button>
-                <button class="move-up" onclick="movePatient(this, 'up')">⬆️</button>
-                <button class="move-down" onclick="movePatient(this, 'down')">⬇️</button>
-                <button class="delete-patient" onclick="deletePatient(this)">Excluir</button>
-            `;
-
-            listItem.appendChild(nameSpan);
-            listItem.appendChild(actionsDiv);
-            queueList.appendChild(listItem);
+            const patientData = {
+                name: patientName,
+                senha: senha,
+                priority: priority,
+                attended: false
+            };
+            
+            createPatientListItem(queueId, patientData);
 
             patientNameInput.value = ''; // Limpa o campo de nome
+            saveState(); // <<< SALVA O ESTADO APÓS ADICIONAR
         }
 
         function toggleAttended(button) {
@@ -400,6 +492,7 @@
                 button.style.backgroundColor = '#28a745'; // Cor original
                 button.style.color = 'white';
             }
+            saveState(); // <<< SALVA O ESTADO APÓS ALTERAR ATENDIMENTO
         }
 
         function movePatient(button, direction) {
@@ -413,38 +506,34 @@
             } else if (direction === 'down' && index < items.length - 1) {
                 parentList.insertBefore(items[index + 1], listItem);
             }
+            saveState(); // <<< SALVA O ESTADO APÓS MOVER
         }
 
         function deletePatient(button) {
             const listItem = button.closest('.queue-item');
             if (confirm('Tem certeza que deseja excluir este paciente da fila?')) {
                 listItem.remove();
+                saveState(); // <<< SALVA O ESTADO APÓS EXCLUIR
             }
         }
 
         function editPatient(button) {
             const listItem = button.closest('.queue-item');
-            const nameSpan = listItem.querySelector('span'); // Pega o span que contém o nome e a senha
-            const currentText = nameSpan.textContent;
-            const senha = nameSpan.getAttribute('data-senha'); // Pega a senha armazenada
-            const originalName = nameSpan.getAttribute('data-original-name'); // Pega o nome original
+            const nameSpan = listItem.querySelector('span');
+            const originalName = nameSpan.getAttribute('data-original-name');
 
-            // Cria um campo de input para edição
             const inputField = document.createElement('input');
             inputField.type = 'text';
             inputField.classList.add('editable-name');
-            inputField.value = originalName; // Define o valor inicial como o nome do paciente
-            inputField.maxLength = 50; // Limita o tamanho do nome (opcional)
+            inputField.value = originalName;
+            inputField.maxLength = 50;
 
-            // Substitui o span pelo input
             nameSpan.replaceWith(inputField);
-            inputField.focus(); // Coloca o foco no campo de input
+            inputField.focus();
 
-            // Altera o botão "Editar" para "Salvar"
             button.textContent = 'Salvar';
-            button.onclick = function() { saveEditedPatient(this); }; // Altera a função do clique
+            button.onclick = function() { saveEditedPatient(this); };
 
-            // Opcional: Adiciona um listener para salvar ao pressionar Enter
             inputField.addEventListener('keypress', function(event) {
                 if (event.key === 'Enter') {
                     saveEditedPatient(button);
@@ -462,24 +551,24 @@
                 inputField.focus();
                 return;
             }
-
-            const senha = listItem.querySelector('span') ? listItem.querySelector('span').getAttribute('data-senha') : ''; // Pega a senha se o span ainda existir
+            
+            const senha = listItem.getAttribute('data-senha'); // Pega a senha do atributo do item
             const newNameSpan = document.createElement('span');
             newNameSpan.textContent = `${senha} - ${newName}`;
-            newNameSpan.setAttribute('data-senha', senha);
             newNameSpan.setAttribute('data-original-name', newName); // Atualiza o nome original
 
-            // Substitui o input de volta para um span
             inputField.replaceWith(newNameSpan);
 
-            // Restaura o botão "Salvar" para "Editar"
             button.textContent = 'Editar';
-            button.onclick = function() { editPatient(this); }; // Restaura a função do clique
+            button.onclick = function() { editPatient(this); };
+            
+            saveState(); // <<< SALVA O ESTADO APÓS SALVAR A EDIÇÃO
         }
 
-        // Abrir a primeira aba por padrão ao carregar a página
+        // Abrir a primeira aba e carregar os dados salvos ao iniciar a página
         document.addEventListener('DOMContentLoaded', (event) => {
             openTab('medica');
+            loadState(); // <<< CARREGA OS DADOS SALVOS
         });
     </script>
 </body>
