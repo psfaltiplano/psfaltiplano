@@ -11,7 +11,6 @@
         
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--secondary); padding-bottom: 15px; margin-bottom: 20px; }
         
-        /* Estilo do Formulário */
         .form-novo { background: #ebf2f7; padding: 15px; border-radius: 8px; margin-bottom: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; }
         .form-novo label { font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 5px; }
         .form-novo input, .form-novo select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -78,19 +77,91 @@
 </div>
 
 <script>
-// Base de dados inicial
 let agendamentos = [
+    // 06/01 - MÉDICA
     { nome: "Marcos Túlio de Oliveira Pinheiro", doc: "898004004221031", obs: "FILHO ROSANGELA", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-06" },
-    { nome: "Elizama Soares Silva", doc: "054.618.093-08", obs: "ACS: Aline", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Maria do Socorro Galdino", doc: "704005139574370", obs: "", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-06" },
+    { nome: "Joana Monteiro de Oliveira", doc: "095.945.683-05", obs: "ACS: PATRICIA", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-06" },
+    { nome: "Francisca Joelma Rodrigues", doc: "708503328170176", obs: "ACS: PATRICIA", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-06" },
+    { nome: "Joao Miguel Alves de Souza", doc: "127.839.933-09", obs: "ACS: Aline", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-06" },
+    
+    // 08/01 - MÉDICA & ENF
+    { nome: "Jose Weino Pereira da Silva", doc: "706700514827510", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "ANA MERLYA OLIVEIRA GONCALVES", doc: "", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "PIETRO VALENTIN SOUZA CABRAL", doc: "", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "LAVINIA FRANÇA FERREIRA", doc: "", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "AYLLA SOPHIA DA SILVA RIOS", doc: "", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "MARIA CLEIDE OLIVEIRA DE LIMA", doc: "700006275635007", obs: "CONSULTA NORMAL", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "JORGE RIBEIRO DE SOUZA", doc: "", obs: "acs patricia 17/12/2025", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "Maria Neide Amorim Tavares", doc: "20/10/1957", obs: "acs jo", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "josé ferreira tavares", doc: "23/10/1953", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-08" },
+    { nome: "thialita alves de souza", doc: "", obs: "", tipo: "ENFERMEIRA", servico: "PUERICULTURA", data: "2026-01-08" },
+
+    // 09/01 - ENFERMEIRA
+    { nome: "MARIA ELENILDA DE SOUZA", doc: "", obs: "ACS HELENA", tipo: "ENFERMEIRA", servico: "DEMANDA LIVRE", data: "2026-01-09" },
+    { nome: "PACIENTE (CNS)", doc: "898002314985895", obs: "", tipo: "ENFERMEIRA", servico: "DEMANDA LIVRE", data: "2026-01-09" },
+    { nome: "PACIENTE (CPF)", doc: "604.465.133-93", obs: "", tipo: "ENFERMEIRA", servico: "DEMANDA LIVRE", data: "2026-01-09" },
+
+    // 13/01 - MÉDICA
+    { nome: "Salvelina Lopes de Oliveira", doc: "029.531.928-32", obs: "24/02/1953", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Elieuda Alves Batista", doc: "708703191606290", obs: "", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Joana Alves Bezerra de Oliveira", doc: "700009761558309", obs: "", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "VIVIAN MARINY BEZERRA DE CARVALHO OLIVEIRA", doc: "898004228990969", obs: "", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Noelia Maria Ferreira da Silva", doc: "127344441960005", obs: "", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "AURILA ANDRE DA SILVA", doc: "706301732017078", obs: "ACS jô", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "ANTONIO TEIXEIRA ALVES", doc: "705001467592051", obs: "jo", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "ROSA PINHEIRO LUCENA", doc: "704507395500310", obs: "JO", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "LIS MARIA MENDES DE ARAUJO", doc: "898005932658268", obs: "mateus", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Italo Batista Oliveira", doc: "160485619630001", obs: "acs helena", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Nagibe da Silva Costa", doc: "703209624243899", obs: "ACS MATEUS", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Theo Lucca Araujo chavier", doc: "898005920046955", obs: "acs jô", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Francisca Licia", doc: "705200433692379", obs: "acs dora", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+    { nome: "Enzo Gabriel Clares de Oliveira", doc: "134.233.233-45", obs: "encaixe patrícia", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-13" },
+
+    // 13/01 - ENFERMEIRA
     { nome: "Maria de Fatima de Lima Santos", doc: "831.611.553-00", obs: "ACS MATEUS", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
-    { nome: "Nadia Raquel Costa Lima", doc: "898005892027653", obs: "", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-02-04" }
+    { nome: "MARIA ELENILDA DE SOUZA", doc: "163916490900005", obs: "ACS HELENA", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+    { nome: "MARINA VIDAL DE FREITAS", doc: "898002314985895", obs: "ACS JO", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+    { nome: "Samille Gonçalves de Moraes", doc: "604.465.133-93", obs: "ACS JO", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+    { nome: "FRANCISCA ANA DE SOUZA SILVA", doc: "704304559129090", obs: "ACS SIMONE", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+    { nome: "Maria Michelle Alves Taveira", doc: "898000499517018", obs: "acs dora", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+    { nome: "Maria Mikaelly Alves Taveira", doc: "700403906831842", obs: "acs dora", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+
+    // 14/01 - MÉDICA
+    { nome: "Elizama Soares Silva", doc: "054.618.093-08", obs: "ACS: Aline", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Aline Emanuelle dos Santos", doc: "700905970097590", obs: "Acs: Simone", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Leticia Alves de Oliveira", doc: "210039678350009", obs: "", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Werliani Ferreira Silva", doc: "700302941997131", obs: "ACS MATEUS", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Ingrid Noyale Sousa Fianca", doc: "898002705569709", obs: "ACS jo", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+
+    // 14/01 - ENFERMEIRA
+    { nome: "Maria Vanessa Torres da Silva", doc: "708103513433238", obs: "ACS DORA", tipo: "ENFERMEIRA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Samya Maria Alexandre Bezerra", doc: "209307035150009", obs: "ACS HELENA", tipo: "ENFERMEIRA", servico: "PRÉ NATAL", data: "2026-01-14" },
+
+    // 15/01 - MÉDICA
+    { nome: "ALYNE KELY NEVES SOBREIRA", doc: "018.605.723-75", obs: "consulta", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-15" },
+    { nome: "Maria Valdenice Batista Bezerra", doc: "708407237016667", obs: "consulta", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-15" },
+    { nome: "Marciano Jota Medeiros", doc: "700002912762205", obs: "acs simone", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-15" },
+    { nome: "JOSE VIANA DE ALMEIDA", doc: "", obs: "acs patricia", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-15" },
+    { nome: "JADISON EMANUEL CONCEIÇÃO GUEDES", doc: "117.328.033-23", obs: "acs helena", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-01-15" },
+
+    // 19/01 - MÉDICA
+    { nome: "GRASSIELLE DA SILVA DE SOUSA", doc: "705008648207954", obs: "dora?", tipo: "MÉDICA", servico: "HIPERTENSOS/DIABÉTICOS", data: "2026-01-19" },
+    { nome: "edvan alvelino dos santos", doc: "702906597049678", obs: "acs mateus", tipo: "MÉDICA", servico: "HIPERTENSOS/DIABÉTICOS", data: "2026-01-19" },
+    { nome: "Maria de Fatima de Lima Santos", doc: "831.611.553-00", obs: "acs mateus", tipo: "MÉDICA", servico: "HIPERTENSOS/DIABÉTICOS", data: "2026-01-19" },
+    { nome: "KARLA MAYARA DE SOUSA CUNHA", doc: "707809681256217", obs: "acs dora", tipo: "MÉDICA", servico: "HIPERTENSOS/DIABÉTICOS", data: "2026-01-19" },
+
+    // FEVEREIRO
+    { nome: "Nadia Raquel Costa Lima", doc: "898005892027653", obs: "", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-02-04" },
+    { nome: "Selma Dias Batista", doc: "700504411029960", obs: "", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-02-04" },
+    { nome: "JUSSARA LEONARDO DA SILVA", doc: "704107262970050", obs: "", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-02-04" },
+    { nome: "MARA THAIS CARLOS DE ARAUJO", doc: "707606246919797", obs: "", tipo: "ENFERMEIRA", servico: "PRÉ NATAL", data: "2026-02-04" },
+    { nome: "Lavinia França Ferreira", doc: "134.227.673-63", obs: "", tipo: "MÉDICA", servico: "PUERICULTURA", data: "2026-02-26" }
 ];
 
 function renderizar() {
     const container = document.getElementById('agenda-content');
     container.innerHTML = '';
-
-    // Agrupar e ordenar por data
     let datas = [...new Set(agendamentos.map(a => a.data))].sort();
 
     datas.forEach(dataStr => {
@@ -132,11 +203,8 @@ function adicionarAgendamento() {
     }
 
     agendamentos.push({ nome, doc, obs: "", tipo, servico, data });
-    
-    // Limpar campos
     document.getElementById('novoNome').value = '';
     document.getElementById('novoDoc').value = '';
-    
     renderizar();
 }
 
@@ -158,13 +226,21 @@ function remover(nome) {
 function exportarParaTXT() {
     let conteudo = "RELATÓRIO DE AGENDAMENTOS UBS\n============================\n\n";
     let datas = [...new Set(agendamentos.map(a => a.data))].sort();
+    
     datas.forEach(data => {
-        conteudo += `DATA: ${data}\n`;
+        const dataObj = new Date(data + 'T00:00:00');
+        const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+        
+        conteudo += `DATA: ${dataFormatada}\n`;
         agendamentos.filter(a => a.data === data).forEach(p => {
-            conteudo += `- [${p.tipo}] ${p.nome} (${p.servico})\n`;
+            // AQUI ESTÁ A ALTERAÇÃO: Incluindo Doc/OBS na exportação
+            conteudo += `- [${p.tipo}] ${p.nome}\n`;
+            conteudo += `  Serviço: ${p.servico}\n`;
+            conteudo += `  Doc/OBS: ${p.doc || 'N/A'} ${p.obs || ''}\n\n`;
         });
         conteudo += "----------------------------\n";
     });
+
     const blob = new Blob([conteudo], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
