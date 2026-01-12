@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Agendamento UBS - Completo</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --bg: #f4f7f6; --text: #333; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--secondary); padding-bottom: 15px; margin-bottom: 20px; }
+        
+        /* Estilo do Formulário */
+        .form-novo { background: #ebf2f7; padding: 15px; border-radius: 8px; margin-bottom: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; }
+        .form-novo label { font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 5px; }
+        .form-novo input, .form-novo select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-add { background: var(--secondary); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-add:hover { background: #2980b9; }
+        .btn-export { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        .dia-bloco { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 5px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .dia-header { background: var(--primary); color: white; padding: 10px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #f8f9fa; font-size: 0.85em; }
+        
+        .tag { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-right: 5px; }
+        .tag-medica { background: #d1ecf1; color: #0c5460; }
+        .tag-enfermeira { background: #f3e5f5; color: #7b1fa2; }
+        .date-edit { border: 1px solid #ccc; border-radius: 3px; padding: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Agenda UBS 2026</h1>
+        <button class="btn-export" onclick="exportarParaTXT()">📥 Exportar para TXT</button>
+    </header>
+
+    <div class="form-novo">
+        <div>
+            <label>Nome do Paciente</label>
+            <input type="text" id="novoNome" placeholder="Ex: Maria Silva">
+        </div>
+        <div>
+            <label>Doc/OBS</label>
+            <input type="text" id="novoDoc" placeholder="CPF ou ACS">
+        </div>
+        <div>
+            <label>Profissional</label>
+            <select id="novoTipo">
+                <option value="MÉDICA">MÉDICA</option>
+                <option value="ENFERMEIRA">ENFERMEIRA</option>
+            </select>
+        </div>
+        <div>
+            <label>Serviço</label>
+            <select id="novoServico">
+                <option value="DEMANDA LIVRE">DEMANDA LIVRE</option>
+                <option value="PRÉ NATAL">PRÉ NATAL</option>
+                <option value="PUERICULTURA">PUERICULTURA</option>
+                <option value="HIPERTENSOS/DIABÉTICOS">HIPERTENSOS/DIABÉTICOS</option>
+                <option value="PREVENÇÃO">PREVENÇÃO</option>
+            </select>
+        </div>
+        <div>
+            <label>Data</label>
+            <input type="date" id="novaData">
+        </div>
+        <button class="btn-add" onclick="adicionarAgendamento()">+ Adicionar</button>
+    </div>
+
+    <div id="agenda-content"></div>
+</div>
+
+<script>
+// Base de dados inicial
+let agendamentos = [
+    { nome: "Marcos Túlio de Oliveira Pinheiro", doc: "898004004221031", obs: "FILHO ROSANGELA", tipo: "MÉDICA", servico: "DEMANDA LIVRE", data: "2026-01-06" },
+    { nome: "Elizama Soares Silva", doc: "054.618.093-08", obs: "ACS: Aline", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-01-14" },
+    { nome: "Maria de Fatima de Lima Santos", doc: "831.611.553-00", obs: "ACS MATEUS", tipo: "ENFERMEIRA", servico: "PREVENÇÃO", data: "2026-01-13" },
+    { nome: "Nadia Raquel Costa Lima", doc: "898005892027653", obs: "", tipo: "MÉDICA", servico: "PRÉ NATAL", data: "2026-02-04" }
+];
+
+function renderizar() {
+    const container = document.getElementById('agenda-content');
+    container.innerHTML = '';
+
+    // Agrupar e ordenar por data
+    let datas = [...new Set(agendamentos.map(a => a.data))].sort();
+
+    datas.forEach(dataStr => {
+        let listaDia = agendamentos.filter(a => a.data === dataStr);
+        let dataObj = new Date(dataStr + 'T00:00:00');
+        let dataFormatada = dataObj.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).toUpperCase();
+
+        let div = document.createElement('div');
+        div.className = 'dia-bloco';
+        div.innerHTML = `
+            <div class="dia-header">${dataFormatada}</div>
+            <table>
+                <thead><tr><th>Tipo</th><th>Paciente</th><th>Serviço / Doc</th><th>Mudar Data</th><th>Ação</th></tr></thead>
+                <tbody>${listaDia.map(p => `
+                    <tr>
+                        <td><span class="tag ${p.tipo === 'MÉDICA' ? 'tag-medica' : 'tag-enfermeira'}">${p.tipo}</span></td>
+                        <td><strong>${p.nome}</strong></td>
+                        <td>${p.servico} <br><small>${p.doc} ${p.obs || ''}</small></td>
+                        <td><input type="date" class="date-edit" value="${p.data}" onchange="trocarData('${p.nome}', this.value)"></td>
+                        <td><button onclick="remover('${p.nome}')" style="color:red; border:none; background:none; cursor:pointer;">✖</button></td>
+                    </tr>
+                `).join('')}</tbody>
+            </table>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function adicionarAgendamento() {
+    const nome = document.getElementById('novoNome').value;
+    const doc = document.getElementById('novoDoc').value;
+    const tipo = document.getElementById('novoTipo').value;
+    const servico = document.getElementById('novoServico').value;
+    const data = document.getElementById('novaData').value;
+
+    if (!nome || !data) {
+        alert("Por favor, preencha pelo menos o Nome e a Data.");
+        return;
+    }
+
+    agendamentos.push({ nome, doc, obs: "", tipo, servico, data });
+    
+    // Limpar campos
+    document.getElementById('novoNome').value = '';
+    document.getElementById('novoDoc').value = '';
+    
+    renderizar();
+}
+
+function trocarData(nome, novaData) {
+    let index = agendamentos.findIndex(a => a.nome === nome);
+    if (index !== -1) {
+        agendamentos[index].data = novaData;
+        renderizar();
+    }
+}
+
+function remover(nome) {
+    if(confirm(`Remover agendamento de ${nome}?`)) {
+        agendamentos = agendamentos.filter(a => a.nome !== nome);
+        renderizar();
+    }
+}
+
+function exportarParaTXT() {
+    let conteudo = "RELATÓRIO DE AGENDAMENTOS UBS\n============================\n\n";
+    let datas = [...new Set(agendamentos.map(a => a.data))].sort();
+    datas.forEach(data => {
+        conteudo += `DATA: ${data}\n`;
+        agendamentos.filter(a => a.data === data).forEach(p => {
+            conteudo += `- [${p.tipo}] ${p.nome} (${p.servico})\n`;
+        });
+        conteudo += "----------------------------\n";
+    });
+    const blob = new Blob([conteudo], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = `agenda_atualizada.txt`;
+    link.click();
+}
+
+renderizar();
+</script>
+
+</body>
+</html>
