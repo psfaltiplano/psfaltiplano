@@ -3,317 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Receitas</title>
-<link rel="shortcut icon" href="logos/174459704290.png">
-<style>
-  html {
-    font-family: sans-serif;
-    background-color: #aed2e8;
-    backgrund-image: url("images/dood1.jpg");
-    ackgroundrepeat: no-repeat;
-    background-size: contain;
-    background-position: top left;
-  }
-  
-  h2 {
-    background-color: #aed2e8;
-    border-radius: 12px;
-    padding: 5px;
-  }
-  
-  img {
-    border-radius: 12px;
-  }
-
-  label {
-    background-color: lightgreen;
-  }
-
-  .my-div {
-    brder: 2px solid black;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    background-color: white;
-    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
-  }
-
-  .done {
-    background-color: lightgreen;
-  }
-  
-  label {
-  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5);
-  background-color: lightgreen;
-  border-radius: 12px;
-  display: inline-block;
-  padding: 5px 10px;
-  font-weight: bold;
-  }
-  
-</style>
+    <title>Agenda Dinâmica Pré-Natal</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        
+        .dia-grupo { margin-top: 30px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+        .dia-header { background: #3498db; color: white; padding: 12px; font-weight: bold; font-size: 1.1em; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-size: 0.9em; color: #666; }
+        
+        .date-input { padding: 6px; border: 1px solid #3498db; border-radius: 4px; cursor: pointer; }
+        .tag { font-size: 0.75em; padding: 3px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase; }
+        .tag-medica { background: #e1f5fe; color: #0288d1; }
+        .tag-enfermeira { background: #f3e5f5; color: #7b1fa2; }
+        .acs { font-size: 0.85em; color: #7f8c8d; display: block; }
+    </style>
 </head>
-<!-- <!-- -->
 <body>
 
-<a href="defaultIndex.html" style="text-decoration: none; color: inherit;"><h1 style="box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.5); background-color: white; border-radius: 12px; text-align: center; order: 2px solid black;">Receitas 00/00/0000</h1></a>
-
-  <div>
-<div id="targetDiv1" class="my-div">
-
-<h1 style="widh:80%;"> Paciente ● DN: 00/00/0000</h1>
-
-<h2>texto ---- 20</h2>
-
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto1.jpg" target="_blank" rel="noopener noreferrer">
-
-<img style="width:49%;"src="images/foto1.jpg"></a>
-
-
-<!--
- <audio controls>
-    <source src="images/audio1.mp3" type="audio/mpeg">
-  </audio>
-  -->
-
-
-
+<div class="container">
+    <h1>Controle de Agendamentos</h1>
+    <p style="text-align: center; color: #666;">Altere a data para mover o paciente de grupo automaticamente.</p>
+    
+    <div id="agenda-dinamica">
+        </div>
 </div>
 
-    <input style="display: none;" type="checkbox" id="controlDiv1" onchange="markDivDone('controlDiv1', 'targetDiv1')">
-    <label for="controlDiv1">MARCAR COMO FEITO</label>
+<script>
+// Dados Iniciais
+const pacientes = [
+    { nome: "Elizama Soares Silva", doc: "054.618.093-08", acs: "Aline", tipo: "MÉDICA", data: "2026-01-14" },
+    { nome: "Aline Emanuelle dos Santos", doc: "700905970097590", acs: "Simone", tipo: "MÉDICA", data: "2026-01-14" },
+    { nome: "Leticia Alves de Oliveira", doc: "CNS 210039678350009", acs: "?", tipo: "MÉDICA", data: "2026-01-14" },
+    { nome: "Werliani Ferreira Silva", doc: "700302941997131", acs: "MATEUS?", tipo: "MÉDICA", data: "2026-01-14" },
+    { nome: "Ingrid Noyale Sousa Fianca", doc: "898002705569709", acs: "Jo", tipo: "MÉDICA", data: "2026-01-14" },
+    { nome: "Maria Vanessa Torres da Silva", doc: "708103513433238", acs: "DORA?", tipo: "ENFERMEIRA", data: "2026-01-14" },
+    { nome: "Samya Maria Alexandre Bezerra", doc: "209307035150009", acs: "HELENA", tipo: "ENFERMEIRA", data: "2026-01-14" },
+    { nome: "Antonia Rizangela Alves de Oliveira Ribeiro", doc: "", acs: "", tipo: "MÉDICA", data: "2026-01-21" },
+    { nome: "Cicera Maria de Matos", doc: "700001240936103", acs: "", tipo: "MÉDICA", data: "2026-01-21" },
+    { nome: "Fabricia de Souza Fideles", doc: "898002702145312", acs: "", tipo: "MÉDICA", data: "2026-01-21" },
+    { nome: "MARIA WINNY GALDINO DA SILVA", doc: "MATEUS?", acs: "", tipo: "ENFERMEIRA", data: "2026-01-21" },
+    { nome: "VIVIANE NUNES FERREIRA", doc: "708802762855910", acs: "", tipo: "ENFERMEIRA", data: "2026-01-21" },
+    { nome: "Ana Carolaine dos Santos", doc: "704209784093389", acs: "", tipo: "MÉDICA", data: "2026-01-28" }
+];
 
-  </div>
-  
-<br>
-<br>
-<br>
-<br>
+function renderizarAgenda() {
+    const container = document.getElementById('agenda-dinamica');
+    container.innerHTML = '';
 
-   <div>
-<div id="targetDiv2" class="my-div">
+    // Agrupar pacientes por data
+    const grupos = {};
+    pacientes.forEach((p, index) => {
+        if (!grupos[p.data]) grupos[p.data] = [];
+        grupos[p.data].push({ ...p, originalIndex: index });
+    });
 
-<h1 style="widh:80%;">Paciente
- ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto2.jpg" target="_blank" rel="noopener noreferrer">
-  
-<img style="width:49%;"src="images/foto2.jpg"></a>
-<!--
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto2.1.jpg" target="_blank" rel="noopener noreferrer">
- 
-<img style="width:49%;"src="images/foto2.1.jpg"></a>
--->
+    // Ordenar as datas
+    const datasOrdenadas = Object.keys(grupos).sort();
 
-</div>
+    datasOrdenadas.forEach(data => {
+        const diaDiv = document.createElement('div');
+        diaDiv.className = 'dia-grupo';
+        
+        // Formatar data para exibição
+        const dataObj = new Date(data + 'T00:00:00');
+        const dataFormatada = dataObj.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' }).toUpperCase();
 
-    <input style="display: none;" type="checkbox" id="controlDiv2" onchange="markDivDone('controlDiv2', 'targetDiv2')">
-    <label for="controlDiv2">MARCAR COMO FEITO</label>
+        diaDiv.innerHTML = `
+            <div class="dia-header">${dataFormatada}</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paciente / Profissional</th>
+                        <th style="width: 150px;">Alterar Data</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-${data}"></tbody>
+            </table>
+        `;
 
-  </div>
-  
-<br>
-<br>
-<br>
-<br>
-<!--
-  <div>
-<div id="targetDiv3" class="my-div">
+        container.appendChild(diaDiv);
+        const tbody = document.getElementById(`lista-${data}`);
 
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto3.jpg" target="_blank" rel="noopener noreferrer">  
+        grupos[data].forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <span class="tag ${p.tipo === 'MÉDICA' ? 'tag-medica' : 'tag-enfermeira'}">${p.tipo}</span>
+                    <strong>${p.nome}</strong>
+                    <span class="acs">${p.doc} ${p.acs ? '| ACS: ' + p.acs : ''}</span>
+                </td>
+                <td>
+                    <input type="date" class="date-input" value="${p.data}" onchange="atualizarData(${p.originalIndex}, this.value)">
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+}
 
-<img style="width:49%;"src="images/foto3.jpg"></a>
+function atualizarData(index, novaData) {
+    pacientes[index].data = novaData;
+    renderizarAgenda(); // Reorganiza a lista visualmente
+}
 
-<h2></h2>
-<h2></h2>
-<h2></h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv3" onchange="markDivDone('controlDiv3', 'targetDiv3')">
-    <label for="controlDiv3">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv4" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto4.jpg" target="_blank" rel="noopener noreferrer"> 
-
-<img style="width:49%;"src="images/foto4.jpg"></a>
-
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv4" onchange="markDivDone('controlDiv4', 'targetDiv4')">
-    <label for="controlDiv4">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv5" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto5.jpg" target="_blank" rel="noopener noreferrer"> 
-
-<img style="width:49%;"src="images/foto5.jpg"></a>
-
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv5" onchange="markDivDone('controlDiv5', 'targetDiv5')">
-    <label for="controlDiv5">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv6" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto6.jpg" target="_blank" rel="noopener noreferrer">
-  
-<img style="width:49%;"src="images/foto6.jpg"></a>
-  
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv6" onchange="markDivDone('controlDiv6', 'targetDiv6')">
-    <label for="controlDiv6">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv7" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto7.jpg" target="_blank" rel="noopener noreferrer">  
-
-<img style="width:49%;"src="images/foto7.jpg"></a>
-
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv7" onchange="markDivDone('controlDiv7', 'targetDiv7')">
-    <label for="controlDiv7">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv8" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto8.jpg" target="_blank" rel="noopener noreferrer">  
-
-<img style="width:49%;"src="images/foto8.jpg"></a>
-
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv8" onchange="markDivDone('controlDiv8', 'targetDiv8')">
-    <label for="controlDiv8">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv9" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto9.jpg" target="_blank" rel="noopener noreferrer">  
-
-<img style="width:49%;"src="images/foto9.jpg"></a>
-
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv9" onchange="markDivDone('controlDiv9', 'targetDiv9')">
-    <label for="controlDiv9">MARCAR COMO FEITO</label>
-
-  </div>
-<br>
-<br>
-<br>
-<br>
-
-  <div>
-<div id="targetDiv10" class="my-div">
-
-<h1 style="widh:80%;">Paciente ● DN: 00/00/0000</h1>
-<a href="https://psfaltiplano.github.io/psfaltiplano/images/foto10.jpg" target="_blank" rel="noopener noreferrer">  
-
-<img style="width:49%;"src="images/foto10.jpg"></a>
-
-<h2>REMÉDIO 100mg -------------------- 30cp</h2>
-<h2>1 cp por dia</h2>
-<h2>Obs.:</h2>
-
-</div>
-
-    <input style="display: none;" type="checkbox" id="controlDiv10" onchange="markDivDone('controlDiv10', 'targetDiv10')">
-    <label for="controlDiv10">MARCAR COMO FEITO</label>
-
-  </div>
-  <h2>Obs.:</h2>
- <audio controls>
-    <source src="images/audio1.mp3" type="audio/mpeg">
-  </audio>
- -->
-  <script>
-    function markDivDone(checkboxId, divId) {
-      const checkbox = document.getElementById(checkboxId);
-      const targetDiv = document.getElementById(divId);
-      const label = document.querySelector(`label[for="${checkboxId}"]`); // Encontra a label associada ao checkbox
-       if (checkbox.checked) {
-         targetDiv.classList.add('done');
-         label.textContent = 'DESMARCAR'; // Atualiza o texto da label
-       } else {
-         targetDiv.classList.remove('done');
-         label.textContent = 'MARCAR COMO FEITO'; // Atualiza o texto da label
-      }
-    }
-  </script>
+// Inicializar
+renderizarAgenda();
+</script>
 
 </body>
 </html>
