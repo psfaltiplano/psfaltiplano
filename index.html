@@ -3,32 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeria de Fotos - 50%</title>
+    <title>Galeria Vertical</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding: 10px; /* Pequeno respiro nas bordas da tela */
             display: flex;
-            flex-wrap: wrap;
-            background-color: #000; /* Fundo preto para destacar as fotos */
+            flex-direction: column; /* Alinha os itens em coluna (um abaixo do outro) */
+            gap: 15px; /* Cria o espaço (gap) entre as imagens */
+            background-color: #f4f4f4;
         }
 
         .foto-container {
-            width: 50%;
+            width: 100%; /* Ocupa a largura total disponível */
             box-sizing: border-box;
-            overflow: hidden;
         }
 
         img {
             width: 100%;
             height: auto;
             display: block;
-            transition: transform 0.3s ease;
-        }
-
-        /* Efeito opcional: a foto aumenta levemente ao passar o mouse */
-        .foto-container:hover img {
-            transform: scale(1.05);
+            border-radius: 8px; /* Opcional: arredonda levemente os cantos */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Opcional: dá profundidade */
         }
     </style>
 </head>
