@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeria Vertical</title>
+    <title>Galeria com Links</title>
     <style>
         body {
             margin: 0;
-            padding: 10px; /* Pequeno respiro nas bordas da tela */
+            padding: 10px;
             display: flex;
-            flex-direction: column; /* Alinha os itens em coluna (um abaixo do outro) */
-            gap: 15px; /* Cria o espaço (gap) entre as imagens */
+            flex-direction: column;
+            gap: 20px;
             background-color: #f4f4f4;
+            align-items: center;
         }
 
         .foto-container {
-            width: 100%; /* Ocupa a largura total disponível */
+            width: 100%;
+            max-width: 800px; /* Limita a largura em telas grandes para não distorcer */
             box-sizing: border-box;
         }
 
@@ -23,24 +25,31 @@
             width: 100%;
             height: auto;
             display: block;
-            border-radius: 8px; /* Opcional: arredonda levemente os cantos */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Opcional: dá profundidade */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Efeito visual para indicar que é clicável */
+        img:hover {
+            opacity: 0.8;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div class="foto-container"><img src="images/foto1.jpg" alt="Foto 1"></div>
-    <div class="foto-container"><img src="images/foto2.jpg" alt="Foto 2"></div>
-    <div class="foto-container"><img src="images/foto3.jpg" alt="Foto 3"></div>
-    <div class="foto-container"><img src="images/foto4.jpg" alt="Foto 4"></div>
-    <div class="foto-container"><img src="images/foto5.jpg" alt="Foto 5"></div>
-    <div class="foto-container"><img src="images/foto6.jpg" alt="Foto 6"></div>
-    <div class="foto-container"><img src="images/foto7.jpg" alt="Foto 7"></div>
-    <div class="foto-container"><img src="images/foto8.jpg" alt="Foto 8"></div>
-    <div class="foto-container"><img src="images/foto9.jpg" alt="Foto 9"></div>
-    <div class="foto-container"><img src="images/foto10.jpg" alt="Foto 10"></div>
-    <div class="foto-container"><img src="images/foto11.jpg" alt="Foto 11"></div>
+    <div class="foto-container"><a href="images/foto1.jpg" target="_blank"><img src="images/foto1.jpg" alt="Foto 1"></a></div>
+    <div class="foto-container"><a href="images/foto2.jpg" target="_blank"><img src="images/foto2.jpg" alt="Foto 2"></a></div>
+    <div class="foto-container"><a href="images/foto3.jpg" target="_blank"><img src="images/foto3.jpg" alt="Foto 3"></a></div>
+    <div class="foto-container"><a href="images/foto4.jpg" target="_blank"><img src="images/foto4.jpg" alt="Foto 4"></a></div>
+    <div class="foto-container"><a href="images/foto5.jpg" target="_blank"><img src="images/foto5.jpg" alt="Foto 5"></a></div>
+    <div class="foto-container"><a href="images/foto6.jpg" target="_blank"><img src="images/foto6.jpg" alt="Foto 6"></a></div>
+    <div class="foto-container"><a href="images/foto7.jpg" target="_blank"><img src="images/foto7.jpg" alt="Foto 7"></a></div>
+    <div class="foto-container"><a href="images/foto8.jpg" target="_blank"><img src="images/foto8.jpg" alt="Foto 8"></a></div>
+    <div class="foto-container"><a href="images/foto9.jpg" target="_blank"><img src="images/foto9.jpg" alt="Foto 9"></a></div>
+    <div class="foto-container"><a href="images/foto10.jpg" target="_blank"><img src="images/foto10.jpg" alt="Foto 10"></a></div>
+    <div class="foto-container"><a href="images/foto11.jpg" target="_blank"><img src="images/foto11.jpg" alt="Foto 11"></a></div>
 
 </body>
 </html>
