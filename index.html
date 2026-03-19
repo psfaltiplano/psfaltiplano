@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receitas</title>
-    <link rel="shortcut icon" href="logos/174459704290.png">
     <style>
         body {
             margin: 0; padding: 15px; display: flex; flex-direction: row;
@@ -16,33 +15,30 @@
         .separador-grupo { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; }
 
         h2 { 
-            width: 100%; color: #ffffff; font-size: 1.5rem; margin: 20px 0 5px 0; 
+            width: 100%; color: #ffffff; font-size: 1.5rem; margin: 20px 0 10px 0; 
             padding-left: 10px; border-left: 4px solid #3498db; 
         }
 
-        /* Área de observação - width 100% empurra as imagens para baixo */
+        /* Estilo das Observações - Ocupam 100% da largura */
         .paciente-obs {
             width: 100%;
             font-size: 1.1rem;
             color: #ffffff;
             background-color: #112240; 
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 8px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-sizing: border-box;
-            margin-bottom: 5px;
         }
 
+        /* Container das imagens - Lado a lado (50% cada) */
         .foto-container {
             width: calc(50% - 7.5px); 
             box-sizing: border-box; 
-            display: flex;
-            flex-direction: column; 
             background-color: #112240; 
             border-radius: 12px;
             padding: 10px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -58,63 +54,59 @@
             try {
                 const resposta = await fetch('images/pacientes.csv'); 
                 const texto = await resposta.text();
-                
                 const linhas = texto.split('\n').slice(1);
                 const containerPrincipal = document.body;
                 
-                let ultimoPaciente = "";
-                let listaImagens = []; // Temporário para organizar a ordem
+                let dadosAgrupados = {};
 
-                // Primeiro, vamos organizar os dados para garantir a ordem: Título -> Obs -> Fotos
-                // Para facilitar, vamos processar linha por linha e inserir direto
-                
+                // 1. Agrupar tudo por paciente primeiro
                 linhas.forEach(linha => {
                     if (linha.trim() === "") return;
-
                     const colunas = linha.split(',');
-                    const nomePaciente = colunas[0]?.trim();
-                    const numero = colunas[1]?.trim() || "";
-                    const nomeArquivo = colunas[2]?.trim();
-                    const observacao = colunas[3]?.trim();
+                    const nome = colunas[0]?.trim();
+                    const numero = colunas[1]?.trim();
+                    const arquivo = colunas[2]?.trim();
+                    const obs = colunas[3]?.trim();
 
-                    // Se mudar o paciente, cria o cabeçalho
-                    if (nomePaciente !== ultimoPaciente) {
-                        const divisor = document.createElement('div');
-                        divisor.className = 'separador-grupo';
-                        containerPrincipal.appendChild(divisor);
-
-                        const titulo = document.createElement('h2');
-                        titulo.textContent = nomePaciente;
-                        containerPrincipal.appendChild(titulo);
-                        
-                        ultimoPaciente = nomePaciente;
+                    if (!dadosAgrupados[nome]) {
+                        dadosAgrupados[nome] = { observacoes: [], imagens: [] };
                     }
+                    if (obs) dadosAgrupados[nome].observacoes.push(obs);
+                    if (arquivo && arquivo !== "nenhum") {
+                        dadosAgrupados[nome].imagens.push({ numero, arquivo });
+                    }
+                });
 
-                    // Se tiver observação nesta linha, ela entra como 100% de largura
-                    if (observacao && observacao !== "") {
+                // 2. Renderizar na ordem correta
+                for (const paciente in dadosAgrupados) {
+                    // Título e Separador
+                    containerPrincipal.insertAdjacentHTML('beforeend', `<div class="separador-grupo"></div><h2>${paciente}</h2>`);
+
+                    // PRIMEIRO: Todos os Textos (cada um em sua linha)
+                    dadosAgrupados[paciente].observacoes.forEach(textoObs => {
                         const divObs = document.createElement('div');
                         divObs.className = 'paciente-obs';
-                        divObs.innerHTML = `<strong>•</strong> ${observacao}`;
+                        divObs.innerHTML = `<strong>•</strong> ${textoObs}`;
                         containerPrincipal.appendChild(divObs);
-                    }
+                    });
 
-                    // Se tiver arquivo, gera o card da foto
-                    if (nomeArquivo && nomeArquivo !== "" && nomeArquivo !== "nenhum") {
-                        const caminho = `images/${nomeArquivo}`;
+                    // DEPOIS: Todas as Imagens (lado a lado)
+                    dadosAgrupados[paciente].imagens.forEach(imgData => {
+                        const caminho = `images/${imgData.arquivo}`;
                         const htmlCard = `
                             <div class="foto-container">
-                                ${numero ? `<span class="numero-foto">${numero}</span>` : ''}
+                                ${imgData.numero ? `<span class="numero-foto">${imgData.numero}</span>` : ''}
                                 <a href="${caminho}" target="_blank">
                                     <img src="${caminho}" alt="Receita">
                                 </a>
                             </div>
                         `;
                         containerPrincipal.insertAdjacentHTML('beforeend', htmlCard);
-                    }
-                });
+                    });
+                }
 
             } catch (erro) {
-                console.error("Erro ao processar o CSV:", erro);
+                console.error("Erro:", erro);
             }
         }
 
