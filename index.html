@@ -3,179 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receitas</title>
-    <link rel="shortcut icon" href="logos/174459704290.png">
+    <title>Receitas - Galeria Completa</title>
     <style>
         body {
             margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center; 
-            align-items: flex-start;
-            gap: 25px 15px; 
-            background-color: #0a192f; /* Azul Marinho Profundo */
+            padding: 0;
+            background-color: #0a192f;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        .separador-grupo {
+        header {
+            padding: 15px;
+            background: #112240;
+            border-bottom: 2px solid #3498db;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .info-topo { margin: 0; font-size: 1.2rem; }
+        .contador { display: block; font-size: 0.9rem; color: #3498db; margin-top: 5px; font-weight: bold; }
+
+        main {
+            flex: 1;
+            position: relative; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100%;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 10px 0;
         }
 
         .foto-container {
-            width: calc(50% - 7.5px); 
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            background-color: #112240; /* Azul original */
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: background-color 0.3s ease; /* Suaviza a troca de cor */
-        }
-
-        /* Classe que será aplicada via JavaScript */
-        .foto-container.concluido {
-            background-color: #1b4d31; /* Verde escuro elegante */
-            border-color: #2ecc71;
-        }
-
-        .btn-feito {
-            margin-top: 10px;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .btn-feito:hover {
-            background-color: #2980b9;
-        }
-
-        /* Muda a cor do botão quando concluído */
-        .concluido .btn-feito {
-            background-color: #27ae60;
-        }
-
-        body::after {
-            content: "";
-            width: calc(50% - 7.5px);
-        }
-
-        .numero-foto {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #ffffff;
-            margin: 5px 0 10px 5px;
-            display: block;
-            letter-spacing: 0.5px;
-        }
-
-        img {
+            display: none;
             width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 8px;
-            transition: transform 0.2s ease;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
         }
 
-        img:active {
-            transform: scale(0.97);
-            opacity: 0.9;
+        .foto-container.active {
+            display: flex;
         }
 
-        a {
-            text-decoration: none;
+        .foto-container img {
+            max-width: 85%;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            object-fit: contain;
+            z-index: 5;
+        }
+
+        /* --- BOTÕES COM LIMITE --- */
+        .btn-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 100px;
+            background: rgba(17, 34, 64, 0.6);
+            border: none;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        /* Estilo para quando o botão está desativado (limite atingido) */
+        .btn-nav:disabled {
+            opacity: 0.1;
+            cursor: not-allowed;
+            background: transparent;
+        }
+
+        .btn-prev { left: 0; border-radius: 0 15px 15px 0; }
+        .btn-next { right: 0; border-radius: 15px 0 0 15px; }
+
+        .btn-nav:not(:disabled):hover {
+            background: rgba(52, 152, 219, 0.8);
+        }
+
+        @media (max-width: 600px) {
+            .btn-nav { width: 45px; font-size: 1.8rem; }
+            .foto-container img { max-width: 92%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="separador-grupo"></div>
+    <header>
+        <h2 class="info-topo">
+            <span id="display-paciente">Carregando...</span>
+            <span id="display-contador" class="contador">0/0</span>
+        </h2>
+    </header>
 
-    <h2 style="width: 100%; color: #ffffff; font-size: 1.5rem; margin-bottom: 10px; padding-left: 5px; border-left: 4px solid #3498db; font-family: 'Segoe UI', sans-serif;">
-        Paciente Sobrenome
-    </h2>
+    <main>
+        <button id="btnPrev" class="btn-nav btn-prev" onclick="mudarSlide(-1)">&#10094;</button>
+        
+        <div id="galeria-fotos">
+            <div class="foto-container active" data-paciente="Paciente Silva" data-index="1" data-total="3">
+                <img src="images/foto1.jpg" alt="Receita">
+            </div>
+            <div class="foto-container" data-paciente="Paciente Silva" data-index="2" data-total="3">
+                <img src="images/foto1.1.jpg" alt="Receita">
+            </div>
+            <div class="foto-container" data-paciente="Paciente Silva" data-index="3" data-total="3">
+                <img src="images/foto1.2.jpg" alt="Receita">
+            </div>
 
-    <div class="foto-container">
-        <span class="numero-foto">#1</span>
-        <a href="images/foto1.jpg" target="_blank"><img src="images/foto1.jpg" alt="Receita 1"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
+            <div class="foto-container" data-paciente="Paciente Santos" data-index="1" data-total="1">
+                <img src="images/foto2.jpg" alt="Receita">
+            </div>
 
-    <div class="foto-container">
-        <span class="numero-foto">#1.1</span>
-        <a href="images/foto1.1.jpg" target="_blank"><img src="images/foto1.1.jpg" alt="Receita 1.1"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
+            <div class="foto-container" data-paciente="Paciente Oliveira" data-index="1" data-total="3">
+                <img src="images/foto3.jpg" alt="Receita">
+            </div>
+            <div class="foto-container" data-paciente="Paciente Oliveira" data-index="2" data-total="3">
+                <img src="images/foto3.1.jpg" alt="Receita">
+            </div>
+            <div class="foto-container" data-paciente="Paciente Oliveira" data-index="3" data-total="3">
+                <img src="images/foto3.2.jpg" alt="Receita">
+            </div>
+        </div>
 
-    <div class="foto-container">
-        <span class="numero-foto">#1.2</span>
-        <a href="images/foto1.2.jpg" target="_blank"><img src="images/foto1.2.jpg" alt="Receita 1.2"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
-
-    <div class="separador-grupo"></div>
-
-    <h2 style="width: 100%; color: #ffffff; font-size: 1.5rem; margin-bottom: 10px; padding-left: 5px; border-left: 4px solid #3498db; font-family: 'Segoe UI', sans-serif;">
-       Paciente Sobrenome
-    </h2>
-
-    <div class="foto-container">
-        <span class="numero-foto">#2</span>
-        <a href="images/foto2.jpg" target="_blank"><img src="images/foto2.jpg" alt="Receita 2"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
-
-    <div class="separador-grupo"></div>
-
-    <h2 style="width: 100%; color: #ffffff; font-size: 1.5rem; margin-bottom: 10px; padding-left: 5px; border-left: 4px solid #3498db; font-family: 'Segoe UI', sans-serif;">
-        Paciente Sobrenome
-    </h2>
-
-    <div class="foto-container">
-        <span class="numero-foto">#3</span>
-        <a href="images/foto3.jpg" target="_blank"><img src="images/foto3.jpg" alt="Receita 3"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
-
-    <div class="foto-container">
-        <span class="numero-foto">#3.1</span>
-        <a href="images/foto3.1.jpg" target="_blank"><img src="images/foto3.1.jpg" alt="Receita 3.1"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
-
-    <div class="foto-container">
-        <span class="numero-foto">#3.2</span>
-        <a href="images/foto3.2.jpg" target="_blank"><img src="images/foto3.2.jpg" alt="Receita 3.2"></a>
-        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
-    </div>
-    
-    <div class="separador-grupo"></div>
+        <button id="btnNext" class="btn-nav btn-next" onclick="mudarSlide(1)">&#10095;</button>
+    </main>
 
     <script>
-        function toggleFeito(botao) {
-            // Encontra o container pai (foto-container) e alterna a classe 'concluido'
-            const container = botao.parentElement;
-            container.classList.toggle('concluido');
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.foto-container');
+        const displayPaciente = document.getElementById('display-paciente');
+        const displayContador = document.getElementById('display-contador');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+
+        function atualizarInterface() {
+            const atual = slides[slideIndex];
             
-            // Opcional: muda o texto do botão
-            if (container.classList.contains('concluido')) {
-                botao.textContent = 'Concluído ✓';
-            } else {
-                botao.textContent = 'Feito';
+            // Atualiza Texto
+            displayPaciente.textContent = atual.getAttribute('data-paciente');
+            displayContador.textContent = `${atual.getAttribute('data-index')}/${atual.getAttribute('data-total')}`;
+
+            // Gerencia Bloqueio dos Botões (Limites)
+            btnPrev.disabled = (slideIndex === 0);
+            btnNext.disabled = (slideIndex === slides.length - 1);
+        }
+
+        function mudarSlide(passo) {
+            const novoIndex = slideIndex + passo;
+
+            // Só muda se estiver dentro do limite
+            if (novoIndex >= 0 && novoIndex < slides.length) {
+                slides[slideIndex].classList.remove('active');
+                slideIndex = novoIndex;
+                slides[slideIndex].classList.add('active');
+                atualizarInterface();
             }
         }
+
+        // Suporte para setas do teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "ArrowLeft") mudarSlide(-1);
+            if (e.key === "ArrowRight") mudarSlide(1);
+        });
+
+        // Inicializa o estado dos botões e textos
+        atualizarInterface();
     </script>
-    
 </body>
 </html>
