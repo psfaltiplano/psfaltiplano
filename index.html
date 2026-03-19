@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receitas - Galeria Completa</title>
+    <title>Receitas - Visão Total</title>
     <style>
+        /* Reset básico para ocupar a tela toda */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -14,20 +19,34 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Impede scroll na página */
         }
 
+        /* --- CABEÇALHO --- */
         header {
-            padding: 15px;
+            padding: 10px;
             background: #112240;
             border-bottom: 2px solid #3498db;
             text-align: center;
-            z-index: 10;
+            z-index: 30; /* Garante que fique acima de tudo */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .info-topo { margin: 0; font-size: 1.2rem; }
-        .contador { display: block; font-size: 0.9rem; color: #3498db; margin-top: 5px; font-weight: bold; }
+        .info-topo { 
+            margin: 0; 
+            font-size: 1.1rem; 
+            letter-spacing: 0.5px;
+        }
 
+        .contador { 
+            display: block; 
+            font-size: 0.85rem; 
+            color: #3498db; 
+            margin-top: 3px; 
+            font-weight: bold; 
+        }
+
+        /* --- ÁREA DA IMAGEM (OCUPANDO TUDO) --- */
         main {
             flex: 1;
             position: relative; 
@@ -35,6 +54,7 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+            background-color: #060d1a; /* Fundo levemente mais escuro para destaque */
         }
 
         .foto-container {
@@ -50,50 +70,61 @@
         }
 
         .foto-container img {
-            max-width: 85%;
-            max-height: 80vh;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            object-fit: contain;
+            /* AJUSTE PARA 100% DA ALTURA */
+            width: auto;
+            height: 100%; 
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Garante que a imagem não distorça */
             z-index: 5;
+            transition: opacity 0.3s ease;
         }
 
-        /* --- BOTÕES COM LIMITE --- */
+        /* --- BOTÕES LATERAIS FLUTUANTES --- */
         .btn-nav {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 60px;
-            height: 100px;
-            background: rgba(17, 34, 64, 0.6);
+            top: 0;
+            bottom: 0;
+            width: 50px; /* Largura da área de clique */
+            background: rgba(0, 0, 0, 0.1); /* Quase invisível para não atrapalhar a leitura */
             border: none;
-            color: white;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 2.5rem;
             cursor: pointer;
             z-index: 20;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            user-select: none;
         }
 
-        /* Estilo para quando o botão está desativado (limite atingido) */
-        .btn-nav:disabled {
-            opacity: 0.1;
-            cursor: not-allowed;
-            background: transparent;
-        }
+        .btn-prev { left: 0; }
+        .btn-next { right: 0; }
 
-        .btn-prev { left: 0; border-radius: 0 15px 15px 0; }
-        .btn-next { right: 0; border-radius: 15px 0 0 15px; }
-
+        /* Efeito ao passar o mouse ou focar */
         .btn-nav:not(:disabled):hover {
-            background: rgba(52, 152, 219, 0.8);
+            background: rgba(52, 152, 219, 0.2);
+            color: white;
+            text-shadow: 0 0 10px #3498db;
         }
 
+        /* Botão desativado nos limites */
+        .btn-nav:disabled {
+            opacity: 0;
+            cursor: default;
+        }
+
+        /* Responsividade para Celulares */
         @media (max-width: 600px) {
-            .btn-nav { width: 45px; font-size: 1.8rem; }
-            .foto-container img { max-width: 92%; }
+            .btn-nav {
+                width: 40px;
+                font-size: 1.5rem;
+            }
+            header {
+                padding: 8px;
+            }
+            .info-topo { font-size: 1rem; }
         }
     </style>
 </head>
@@ -107,35 +138,37 @@
     </header>
 
     <main>
-        <button id="btnPrev" class="btn-nav btn-prev" onclick="mudarSlide(-1)">&#10094;</button>
+        <button id="btnPrev" class="btn-nav btn-prev" onclick="mudarSlide(-1)" aria-label="Anterior">&#10094;</button>
         
-        <div id="galeria-fotos">
+        <div id="galeria-fotos" style="width: 100%; height: 100%;">
+            
             <div class="foto-container active" data-paciente="Paciente Silva" data-index="1" data-total="3">
-                <img src="images/foto1.jpg" alt="Receita">
+                <img src="images/foto1.jpg" alt="Receita Silva 1">
             </div>
             <div class="foto-container" data-paciente="Paciente Silva" data-index="2" data-total="3">
-                <img src="images/foto1.1.jpg" alt="Receita">
+                <img src="images/foto1.1.jpg" alt="Receita Silva 2">
             </div>
             <div class="foto-container" data-paciente="Paciente Silva" data-index="3" data-total="3">
-                <img src="images/foto1.2.jpg" alt="Receita">
+                <img src="images/foto1.2.jpg" alt="Receita Silva 3">
             </div>
 
             <div class="foto-container" data-paciente="Paciente Santos" data-index="1" data-total="1">
-                <img src="images/foto2.jpg" alt="Receita">
+                <img src="images/foto2.jpg" alt="Receita Santos 1">
             </div>
 
             <div class="foto-container" data-paciente="Paciente Oliveira" data-index="1" data-total="3">
-                <img src="images/foto3.jpg" alt="Receita">
+                <img src="images/foto3.jpg" alt="Receita Oliveira 1">
             </div>
             <div class="foto-container" data-paciente="Paciente Oliveira" data-index="2" data-total="3">
-                <img src="images/foto3.1.jpg" alt="Receita">
+                <img src="images/foto3.1.jpg" alt="Receita Oliveira 2">
             </div>
             <div class="foto-container" data-paciente="Paciente Oliveira" data-index="3" data-total="3">
-                <img src="images/foto3.2.jpg" alt="Receita">
+                <img src="images/foto3.2.jpg" alt="Receita Oliveira 3">
             </div>
+
         </div>
 
-        <button id="btnNext" class="btn-nav btn-next" onclick="mudarSlide(1)">&#10095;</button>
+        <button id="btnNext" class="btn-nav btn-next" onclick="mudarSlide(1)" aria-label="Próximo">&#10095;</button>
     </main>
 
     <script>
@@ -146,22 +179,29 @@
         const btnPrev = document.getElementById('btnPrev');
         const btnNext = document.getElementById('btnNext');
 
+        /**
+         * Atualiza os textos do cabeçalho e o estado dos botões laterais
+         */
         function atualizarInterface() {
             const atual = slides[slideIndex];
             
-            // Atualiza Texto
+            // Atualiza Nome e Contador (Ex: 1/3)
             displayPaciente.textContent = atual.getAttribute('data-paciente');
             displayContador.textContent = `${atual.getAttribute('data-index')}/${atual.getAttribute('data-total')}`;
 
-            // Gerencia Bloqueio dos Botões (Limites)
+            // Desativa botões se chegar no início ou fim da lista total
             btnPrev.disabled = (slideIndex === 0);
             btnNext.disabled = (slideIndex === slides.length - 1);
         }
 
+        /**
+         * Troca o slide visível
+         * @param {number} passo - Use 1 para avançar e -1 para voltar
+         */
         function mudarSlide(passo) {
             const novoIndex = slideIndex + passo;
 
-            // Só muda se estiver dentro do limite
+            // Verifica limites antes de realizar a troca
             if (novoIndex >= 0 && novoIndex < slides.length) {
                 slides[slideIndex].classList.remove('active');
                 slideIndex = novoIndex;
@@ -170,13 +210,15 @@
             }
         }
 
-        // Suporte para setas do teclado
+        /**
+         * Atalhos de Teclado
+         */
         document.addEventListener('keydown', (e) => {
             if (e.key === "ArrowLeft") mudarSlide(-1);
             if (e.key === "ArrowRight") mudarSlide(1);
         });
 
-        // Inicializa o estado dos botões e textos
+        // Inicialização do site
         atualizarInterface();
     </script>
 </body>
