@@ -1,6 +1,6 @@
 paciente,numero,arquivo,observacao
-João Silva,#1,foto1.jpg,Tomar os medicamentos em jejum por 30 dias.
-João Silva,#1.1,foto1.1.jpg,aslkjdlaksdjlaksdjaklsd
-João Silva,#1.2,foto1.2.jpg,aslkdlaçsdkakldksd
-Maria Oliveira,#2,foto2.jpg,Trazer os exames de sangue na próxima consulta.
+João Silva,,foto1.jpg,Tomar os medicamentos em jejum por 30 dias. SALDKNASLKDNASLDKNADLK <br> siojdaslkdjaslkdjaslkwopeiqwpoeiqwpoeipqwoeiewopeopaslçdkasçlkdlçaskdlçaskdlçaskdlçaskdaslçdkaskd                      lkfmdlkfmsldkfmklefmlkemfklmlkfwmef
+João Silva,,foto1.1.jpg,
+João Silva,#1.2,foto1.2.jpg,
+Maria Oliveira,#2,foto2.jpg,
 Carlos Souza,#3,foto3.jpg,Paciente sem fotos no momento - aguardando retorno.
