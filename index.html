@@ -20,27 +20,34 @@
             padding-left: 10px; border-left: 4px solid #3498db; 
         }
 
-        /* Área de observação logo abaixo do nome */
+        /* Área de observação - width 100% empurra as imagens para baixo */
         .paciente-obs {
             width: 100%;
             font-size: 1.1rem;
             color: #ffffff;
-            background-color: #112240; border-radius: 12px;
-            padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background-color: #112240; 
+            border-radius: 12px;
+            padding: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+            margin-bottom: 5px;
         }
 
         .foto-container {
-            width: calc(50% - 7.5px); box-sizing: border-box; display: flex;
-            flex-direction: column; background-color: #112240; border-radius: 12px;
-            padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: calc(50% - 7.5px); 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column; 
+            background-color: #112240; 
+            border-radius: 12px;
+            padding: 10px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .numero-foto { font-weight: 600; font-size: 1.1rem; color: #ffffff; margin-bottom: 8px; display: block; }
-
         img { width: 100%; height: auto; border-radius: 8px; display: block; }
-        
         a { text-decoration: none; }
     </style>
 </head>
@@ -50,23 +57,27 @@
         async function carregarDados() {
             try {
                 const resposta = await fetch('images/pacientes.csv'); 
-                const dados = await Math.max(0, (await resposta.text())); // Fallback para texto
-                const textoLimpo = await fetch('images/pacientes.csv').then(r => r.text());
+                const texto = await resposta.text();
                 
-                const linhas = textoLimpo.split('\n').slice(1);
+                const linhas = texto.split('\n').slice(1);
                 const containerPrincipal = document.body;
+                
                 let ultimoPaciente = "";
+                let listaImagens = []; // Temporário para organizar a ordem
 
+                // Primeiro, vamos organizar os dados para garantir a ordem: Título -> Obs -> Fotos
+                // Para facilitar, vamos processar linha por linha e inserir direto
+                
                 linhas.forEach(linha => {
                     if (linha.trim() === "") return;
 
                     const colunas = linha.split(',');
                     const nomePaciente = colunas[0]?.trim();
-                    const numero = colunas[1]?.trim();
+                    const numero = colunas[1]?.trim() || "";
                     const nomeArquivo = colunas[2]?.trim();
                     const observacao = colunas[3]?.trim();
 
-                    // Se mudar o paciente, cria o cabeçalho e a observação dele
+                    // Se mudar o paciente, cria o cabeçalho
                     if (nomePaciente !== ultimoPaciente) {
                         const divisor = document.createElement('div');
                         divisor.className = 'separador-grupo';
@@ -75,24 +86,24 @@
                         const titulo = document.createElement('h2');
                         titulo.textContent = nomePaciente;
                         containerPrincipal.appendChild(titulo);
-
-                        // Adiciona a observação abaixo do nome se ela existir
-                        if (observacao && observacao !== "") {
-                            const divObs = document.createElement('div');
-                            divObs.className = 'paciente-obs';
-                            divObs.textContent = observacao;
-                            containerPrincipal.appendChild(divObs);
-                        }
                         
                         ultimoPaciente = nomePaciente;
                     }
 
-                    // Se houver nome de arquivo, gera o card da foto
+                    // Se tiver observação nesta linha, ela entra como 100% de largura
+                    if (observacao && observacao !== "") {
+                        const divObs = document.createElement('div');
+                        divObs.className = 'paciente-obs';
+                        divObs.innerHTML = `<strong>•</strong> ${observacao}`;
+                        containerPrincipal.appendChild(divObs);
+                    }
+
+                    // Se tiver arquivo, gera o card da foto
                     if (nomeArquivo && nomeArquivo !== "" && nomeArquivo !== "nenhum") {
                         const caminho = `images/${nomeArquivo}`;
                         const htmlCard = `
                             <div class="foto-container">
-                                <span class="numero-foto">${numero}</span>
+                                ${numero ? `<span class="numero-foto">${numero}</span>` : ''}
                                 <a href="${caminho}" target="_blank">
                                     <img src="${caminho}" alt="Receita">
                                 </a>
