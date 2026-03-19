@@ -18,7 +18,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Divisor para separar os grupos de receitas */
         .separador-grupo {
             width: 100%;
             height: 5px;
@@ -28,19 +27,44 @@
 
         .foto-container {
             width: calc(50% - 7.5px); 
-            max-height: 70vh; /* LIMITA A ALTURA A 70% DA TELA */
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            background-color: #112240; /* Azul um pouco mais claro para o card */
+            background-color: #112240; /* Azul original */
             border-radius: 12px;
             padding: 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            overflow: hidden; /* Evita que o conteúdo escape do card */
+            transition: background-color 0.3s ease; /* Suaviza a troca de cor */
         }
 
-        /* Mantém o alinhamento à esquerda para itens ímpares */
+        /* Classe que será aplicada via JavaScript */
+        .foto-container.concluido {
+            background-color: #1b4d31; /* Verde escuro elegante */
+            border-color: #2ecc71;
+        }
+
+        .btn-feito {
+            margin-top: 10px;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-feito:hover {
+            background-color: #2980b9;
+        }
+
+        /* Muda a cor do botão quando concluído */
+        .concluido .btn-feito {
+            background-color: #27ae60;
+        }
+
         body::after {
             content: "";
             width: calc(50% - 7.5px);
@@ -49,28 +73,15 @@
         .numero-foto {
             font-weight: 600;
             font-size: 1.1rem;
-            color: #ffffff; /* Letras Brancas */
+            color: #ffffff;
             margin: 5px 0 10px 5px;
             display: block;
             letter-spacing: 0.5px;
-            flex-shrink: 0; /* Impede que o número seja esmagado */
-        }
-
-        /* Container do link para centralizar a imagem */
-        .foto-container a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            overflow: hidden;
         }
 
         img {
-            max-width: 100%;
-            max-height: 100%; /* FAZ A IMAGEM RESPEITAR O LIMITE DO CONTAINER */
-            width: auto;
+            width: 100%;
             height: auto;
-            object-fit: contain; /* AJUSTA A FOTO SEM CORTAR */
             display: block;
             border-radius: 8px;
             transition: transform 0.2s ease;
@@ -97,16 +108,19 @@
     <div class="foto-container">
         <span class="numero-foto">#1</span>
         <a href="images/foto1.jpg" target="_blank"><img src="images/foto1.jpg" alt="Receita 1"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
 
     <div class="foto-container">
         <span class="numero-foto">#1.1</span>
         <a href="images/foto1.1.jpg" target="_blank"><img src="images/foto1.1.jpg" alt="Receita 1.1"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
 
     <div class="foto-container">
         <span class="numero-foto">#1.2</span>
         <a href="images/foto1.2.jpg" target="_blank"><img src="images/foto1.2.jpg" alt="Receita 1.2"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
 
     <div class="separador-grupo"></div>
@@ -118,6 +132,7 @@
     <div class="foto-container">
         <span class="numero-foto">#2</span>
         <a href="images/foto2.jpg" target="_blank"><img src="images/foto2.jpg" alt="Receita 2"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
 
     <div class="separador-grupo"></div>
@@ -129,19 +144,37 @@
     <div class="foto-container">
         <span class="numero-foto">#3</span>
         <a href="images/foto3.jpg" target="_blank"><img src="images/foto3.jpg" alt="Receita 3"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
 
     <div class="foto-container">
         <span class="numero-foto">#3.1</span>
         <a href="images/foto3.1.jpg" target="_blank"><img src="images/foto3.1.jpg" alt="Receita 3.1"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
 
     <div class="foto-container">
         <span class="numero-foto">#3.2</span>
         <a href="images/foto3.2.jpg" target="_blank"><img src="images/foto3.2.jpg" alt="Receita 3.2"></a>
+        <button class="btn-feito" onclick="toggleFeito(this)">Feito</button>
     </div>
     
     <div class="separador-grupo"></div>
+
+    <script>
+        function toggleFeito(botao) {
+            // Encontra o container pai (foto-container) e alterna a classe 'concluido'
+            const container = botao.parentElement;
+            container.classList.toggle('concluido');
+            
+            // Opcional: muda o texto do botão
+            if (container.classList.contains('concluido')) {
+                botao.textContent = 'Concluído ✓';
+            } else {
+                botao.textContent = 'Feito';
+            }
+        }
+    </script>
     
 </body>
 </html>
