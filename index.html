@@ -2,186 +2,113 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Receitas - Ajuste Automático</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receitas</title>
+    <link rel="shortcut icon" href="logos/174459704290.png">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #0a192f;
+            margin: 0; padding: 15px; display: flex; flex-direction: row;
+            flex-wrap: wrap; justify-content: center; align-items: flex-start;
+            gap: 25px 15px; background-color: #0a192f;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-            height: 100vh; /* Ocupa exatamente a altura da tela */
-            width: 100vw;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Proíbe barras de rolagem no corpo */
         }
 
-        /* --- CABEÇALHO --- */
-        header {
-            flex-shrink: 0; /* Impede que o cabeçalho seja esmagado */
-            padding: 10px;
-            background: #112240;
-            border-bottom: 2px solid #3498db;
-            text-align: center;
-            z-index: 30;
+        .separador-grupo { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; }
+
+        h2 { 
+            width: 100%; color: #ffffff; font-size: 1.5rem; margin: 20px 0 5px 0; 
+            padding-left: 10px; border-left: 4px solid #3498db; 
         }
 
-        .info-topo { margin: 0; font-size: 1.1rem; }
-        .contador { display: block; font-size: 0.85rem; color: #3498db; margin-top: 3px; font-weight: bold; }
-
-        /* --- ÁREA DA IMAGEM --- */
-        main {
-            flex: 1; /* Ocupa todo o espaço restante abaixo do header */
-            position: relative; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Área de observação logo abaixo do nome */
+        .paciente-obs {
             width: 100%;
-            height: 100%; /* Garante que o container não cresça além da tela */
-            background-color: #060d1a;
-            overflow: hidden;
+            color: #bdc3c7;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding-left: 14px;
+            font-style: italic;
+            line-height: 1.4;
         }
 
         .foto-container {
-            display: none;
-            width: 100%;
-            height: 100%;
-            justify-content: center;
-            align-items: center;
-            padding: 10px; /* Pequeno respiro lateral */
+            width: calc(50% - 7.5px); box-sizing: border-box; display: flex;
+            flex-direction: column; background-color: #112240; border-radius: 12px;
+            padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .foto-container.active {
-            display: flex;
-        }
+        .numero-foto { font-weight: 600; font-size: 1.1rem; color: #ffffff; margin-bottom: 8px; display: block; }
 
-        .foto-container img {
-            /* O SEGREDO DO AJUSTE AQUI: */
-            max-width: 100%; 
-            max-height: 100%; 
-            width: auto;
-            height: auto;
-            object-fit: contain; /* Encaixa a imagem inteira sem cortar */
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        /* --- BOTÕES LATERAIS --- */
-        .btn-nav {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 60px;
-            background: rgba(0, 0, 0, 0.15);
-            border: none;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 3rem;
-            cursor: pointer;
-            z-index: 20;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-            user-select: none;
-        }
-
-        .btn-prev { left: 0; }
-        .btn-next { right: 0; }
-
-        .btn-nav:not(:disabled):hover {
-            background: rgba(52, 152, 219, 0.2);
-            color: white;
-        }
-
-        .btn-nav:disabled {
-            display: none; /* Esconde se não houver mais fotos */
-        }
-
-        @media (max-width: 600px) {
-            .btn-nav { width: 45px; font-size: 2rem; }
-        }
+        img { width: 100%; height: auto; border-radius: 8px; display: block; }
+        
+        a { text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h2 class="info-topo">
-            <span id="display-paciente">Carregando...</span>
-            <span id="display-contador" class="contador">0/0</span>
-        </h2>
-    </header>
-
-    <main>
-        <button id="btnPrev" class="btn-nav btn-prev" onclick="mudarSlide(-1)">&#10094;</button>
-        
-        <div id="galeria-fotos" style="width:100%; height:100%;">
-            <div class="foto-container active" data-paciente="Paciente Silva" data-index="1" data-total="3">
-                <img src="images/foto1.jpg">
-            </div>
-            <div class="foto-container" data-paciente="Paciente Silva" data-index="2" data-total="3">
-                <img src="images/foto1.1.jpg">
-            </div>
-            <div class="foto-container" data-paciente="Paciente Silva" data-index="3" data-total="3">
-                <img src="images/foto1.2.jpg">
-            </div>
-
-            <div class="foto-container" data-paciente="Paciente Santos" data-index="1" data-total="1">
-                <img src="images/foto2.jpg">
-            </div>
-
-            <div class="foto-container" data-paciente="Paciente Oliveira" data-index="1" data-total="3">
-                <img src="images/foto3.jpg">
-            </div>
-            <div class="foto-container" data-paciente="Paciente Oliveira" data-index="2" data-total="3">
-                <img src="images/foto3.1.jpg">
-            </div>
-            <div class="foto-container" data-paciente="Paciente Oliveira" data-index="3" data-total="3">
-                <img src="images/foto3.2.jpg">
-            </div>
-        </div>
-
-        <button id="btnNext" class="btn-nav btn-next" onclick="mudarSlide(1)">&#10095;</button>
-    </main>
-
     <script>
-        let slideIndex = 0;
-        const slides = document.querySelectorAll('.foto-container');
-        const displayPaciente = document.getElementById('display-paciente');
-        const displayContador = document.getElementById('display-contador');
-        const btnPrev = document.getElementById('btnPrev');
-        const btnNext = document.getElementById('btnNext');
+        async function carregarDados() {
+            try {
+                const resposta = await fetch('images/pacientes.csv'); 
+                const dados = await Math.max(0, (await resposta.text())); // Fallback para texto
+                const textoLimpo = await fetch('images/pacientes.csv').then(r => r.text());
+                
+                const linhas = textoLimpo.split('\n').slice(1);
+                const containerPrincipal = document.body;
+                let ultimoPaciente = "";
 
-        function atualizarInterface() {
-            const atual = slides[slideIndex];
-            displayPaciente.textContent = atual.getAttribute('data-paciente');
-            displayContador.textContent = `${atual.getAttribute('data-index')}/${atual.getAttribute('data-total')}`;
+                linhas.forEach(linha => {
+                    if (linha.trim() === "") return;
 
-            btnPrev.disabled = (slideIndex === 0);
-            btnNext.disabled = (slideIndex === slides.length - 1);
-        }
+                    const colunas = linha.split(',');
+                    const nomePaciente = colunas[0]?.trim();
+                    const numero = colunas[1]?.trim();
+                    const nomeArquivo = colunas[2]?.trim();
+                    const observacao = colunas[3]?.trim();
 
-        function mudarSlide(passo) {
-            const novoIndex = slideIndex + passo;
-            if (novoIndex >= 0 && novoIndex < slides.length) {
-                slides[slideIndex].classList.remove('active');
-                slideIndex = novoIndex;
-                slides[slideIndex].classList.add('active');
-                atualizarInterface();
+                    // Se mudar o paciente, cria o cabeçalho e a observação dele
+                    if (nomePaciente !== ultimoPaciente) {
+                        const divisor = document.createElement('div');
+                        divisor.className = 'separador-grupo';
+                        containerPrincipal.appendChild(divisor);
+
+                        const titulo = document.createElement('h2');
+                        titulo.textContent = nomePaciente;
+                        containerPrincipal.appendChild(titulo);
+
+                        // Adiciona a observação abaixo do nome se ela existir
+                        if (observacao && observacao !== "") {
+                            const divObs = document.createElement('div');
+                            divObs.className = 'paciente-obs';
+                            divObs.textContent = observacao;
+                            containerPrincipal.appendChild(divObs);
+                        }
+                        
+                        ultimoPaciente = nomePaciente;
+                    }
+
+                    // Se houver nome de arquivo, gera o card da foto
+                    if (nomeArquivo && nomeArquivo !== "" && nomeArquivo !== "nenhum") {
+                        const caminho = `images/${nomeArquivo}`;
+                        const htmlCard = `
+                            <div class="foto-container">
+                                <span class="numero-foto">${numero}</span>
+                                <a href="${caminho}" target="_blank">
+                                    <img src="${caminho}" alt="Receita">
+                                </a>
+                            </div>
+                        `;
+                        containerPrincipal.insertAdjacentHTML('beforeend', htmlCard);
+                    }
+                });
+
+            } catch (erro) {
+                console.error("Erro ao processar o CSV:", erro);
             }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "ArrowLeft") mudarSlide(-1);
-            if (e.key === "ArrowRight") mudarSlide(1);
-        });
-
-        atualizarInterface();
+        carregarDados();
     </script>
 </body>
 </html>
