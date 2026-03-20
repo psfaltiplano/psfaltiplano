@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Formatação: Passo a Passo</title>
+    <style>
+        :root {
+            --azul-escuro: #1a2a6c;
+            --azul-claro: #00d2ff;
+            --branco: #ffffff;
+            --verde-sucesso: #2ecc71;
+            --verde-escuro: #1b5e20;
+            --cinza-checkbox: #ccc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, var(--azul-escuro) 0%, #203a43 50%, #2c5364 100%);
+            color: var(--branco);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            color: var(--azul-claro);
+            border-bottom: 2px solid var(--azul-claro);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Estilização Customizada do Checklist --- */
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* O segredo: usamos o seletor :has() para mudar o fundo do card pai quando o filho está marcado */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.4s ease;
+            border: 1px solid transparent;
+        }
+
+        /* Quando o checkbox dentro do item está marcado, o fundo do card muda */
+        .checklist-item:has(input:checked) {
+            background: rgba(46, 204, 113, 0.2); /* Fundo verde transparente */
+            border-color: var(--verde-sucesso);
+        }
+
+        .checklist-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            font-size: 1.1rem;
+            flex-grow: 1;
+            padding-left: 40px;
+            position: relative;
+            font-weight: 500;
+        }
+
+        /* Quadrado do Checkbox */
+        .checklist-item label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 25px;
+            width: 25px;
+            background-color: rgba(255,255,255,0.1);
+            border: 2px solid var(--cinza-checkbox);
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        /* O "V" de concluído */
+        .checklist-item label::after {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            width: 6px;
+            height: 12px;
+            border: solid var(--branco);
+            border-width: 0 3px 3px 0;
+            transform: translateY(-55%) rotate(45deg) scale(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Estilo do checkbox marcado */
+        .checklist-item input:checked + label::before {
+            background-color: var(--verde-sucesso);
+            border-color: var(--verde-sucesso);
+        }
+
+        .checklist-item input:checked + label::after {
+            transform: translateY(-55%) rotate(45deg) scale(1);
+        }
+
+        /* --- Passo 2 Estilos --- */
+
+        .btn-download {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--azul-claro);
+            color: var(--azul-escuro);
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .btn-download:hover {
+            background-color: var(--branco);
+            transform: scale(1.05);
+        }
+
+        .instrucoes-lista {
+            list-style: none;
+            padding-left: 0;
+            color: #eee;
+        }
+
+        .instrucoes-lista li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .instrucoes-lista li::before {
+            content: "→";
+            color: var(--azul-claro);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Guia de Formatação PC</h1>
+        <p>Siga os passos cuidadosamente para um sistema limpo e rápido.</p>
+    </header>
+
+    <div class="container">
+        <section id="passo1">
+            <h2>1. Preparação e Backup</h2>
+            <div class="warning">
+                <strong>Atenção:</strong> A formatação apagará todos os dados. Certifique-se de ter feito o backup de tudo.
+            </div>
+
+            <ul class="checklist">
+                <li class="checklist-item">
+                    <input type="checkbox" id="item1">
+                    <label for="item1">Arquivos pessoais importantes</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="item2">
+                    <label for="item2">Driver de Áudio (Baixado no Pendrive)</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="item3">
+                    <label for="item3">Driver de Vídeo (Baixado no Pendrive)</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="item4">
+                    <label for="item4">Chave de ativação do Windows</label>
+                </li>
+            </ul>
+        </section>
+        
+        <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 40px 0;">
+
+        <section id="passo2">
+            <h2>2. Baixar a Mídia do Windows 10</h2>
+            
+            <p style="line-height: 1.6; color: #ddd;">
+                Para formatar, você precisa da imagem oficial do sistema (ISO). A Microsoft fornece uma ferramenta que já baixa e prepara o pendrive automaticamente.
+            </p>
+
+            <div style="background: rgba(0, 210, 255, 0.1); border-left: 4px solid var(--azul-claro); padding: 15px; margin: 20px 0; font-size: 0.95rem;">
+                <strong>Dica:</strong> Você precisará de um pendrive vazio de pelo menos <strong>8GB</strong>.
+            </div>
+
+            <div style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
+                <a href="https://www.microsoft.com/pt-br/software-download/windows10" target="_blank" class="btn-download">
+                    Download Windows 10 MICROSOFT
+                </a>
+            </div>
+
+            <ul class="instrucoes-lista">
+                <li>Acesse o site oficial da Microsoft acima.</li>
+                <li>Clique em <strong>"Baixar a ferramenta agora"</strong>.</li>
+                <li>Execute o arquivo .exe baixado.</li>
+                <li>Escolha <strong>"Criar mídia de instalação"</strong> para outro PC.</li>
+            </ul>
+        </section>
+        
+        <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 40px 0;">
+
+        <section id="passo3">
+            <h2>3. Prioridade de Boot (BIOS/UEFI)</h2>
+            
+            <p style="line-height: 1.6; color: #ddd;">
+                Agora você precisa dizer ao computador para iniciar pelo <strong>Pendrive</strong> e não pelo HD/SSD interno.
+            </p>
+
+            <div class="instrucoes-lista">
+                <ol style="padding-left: 20px; color: #eee;">
+                    <li style="margin-bottom: 15px;">Insira o pendrive no PC desligado.</li>
+                    <li style="margin-bottom: 15px;">Ligue o computador e comece a apertar repetidamente a <strong>Tecla de Boot</strong> (veja a tabela abaixo).</li>
+                    <li style="margin-bottom: 15px;">No menu que aparecer, selecione o seu pendrive (geralmente aparece como "USB Device" ou o nome da marca do pendrive).</li>
+                </ol>
+            </div>
+
+            <div style="overflow-x: auto; margin-top: 25px;">
+                <table style="width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: var(--azul-claro); color: var(--azul-escuro);">
+                            <th style="padding: 10px; text-align: left;">Marca do PC/Placa-Mãe</th>
+                            <th style="padding: 10px; text-align: center;">Tecla de Boot</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 10px;">ASUS / Gigabyte / Dell</td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold;">F12</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 10px;">HP</td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold;">F9 ou ESC</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 10px;">Lenovo</td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold;">F12 ou Botão Novo</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 10px;">Samsung / Acer</td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold;">F12 ou F2</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Positivo / Intelbras</td>
+                            <td style="padding: 10px; text-align: center; font-weight: bold;">F11 ou F7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            
+
+            <div class="info-box" style="background: rgba(255, 255, 255, 0.05); border-left: 4px solid #ffc107; padding: 15px; margin-top: 25px; font-size: 0.85rem; color: #ffc107;">
+                <strong>Dica:</strong> Se o menu de boot não aparecer, você terá que entrar na BIOS (geralmente tecla <strong>DEL</strong> ou <strong>F2</strong>) e mudar a ordem manualmente na aba "Boot".
+            </div>
+        </section>
+        
+    </div>
+
+</body>
+</html>
