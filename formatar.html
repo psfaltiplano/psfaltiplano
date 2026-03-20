@@ -6,18 +6,22 @@
     <title>Guia de Formatação: Passo a Passo</title>
     <style>
         :root {
-            --azul-escuro: #1a2a6c;
-            --azul-claro: #00d2ff;
-            --branco: #ffffff;
-            --verde-sucesso: #2ecc71;
-            --verde-escuro: #1b5e20;
-            --cinza-checkbox: #ccc;
+            /* Nova Paleta de Cores: Verde Esmeralda e Água */
+            --cor-fundo-profundo: #0a1114; /* Cinza Petróleo Muito Escuro */
+            --cor-destaque-principal: #16a085; /* Verde Esmeralda Suave */
+            --cor-destaque-hover: #1abc9c; /* Verde Turquesa Claro */
+            --cor-texto-principal: #f0f4f7; /* Off-white com tom frio */
+            --cor-sucesso-transparente: rgba(46, 204, 113, 0.1);
+            --cor-alerta: #f39c12; /* Laranja Suave */
+            --cor-checkbox: #34495e; /* Cinza Azulado */
+            --cor-borda-container: rgba(26, 188, 156, 0.2);
+            --cor-fundo-checkbox-checked: rgba(26, 188, 156, 0.2);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(180deg, var(--azul-escuro) 0%, #203a43 50%, #2c5364 100%);
-            color: var(--branco);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top, #142129 0%, var(--cor-fundo-profundo) 100%);
+            color: var(--cor-texto-principal);
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -27,123 +31,124 @@
 
         header {
             text-align: center;
-            padding: 50px 20px;
+            padding: 60px 20px;
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #2ecc71, var(--cor-destaque-hover));
+            -webkit-background-clip: text;
+            -webkit-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
         .container {
             width: 90%;
             max-width: 600px;
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 1px solid var(--cor-borda-container);
             margin-bottom: 50px;
         }
 
         h2 {
-            color: var(--azul-claro);
-            border-bottom: 2px solid var(--azul-claro);
-            padding-bottom: 10px;
+            color: var(--cor-destaque-hover);
+            border-bottom: 1px solid rgba(26, 188, 156, 0.2);
+            padding-bottom: 15px;
             margin-top: 0;
+            text-transform: uppercase;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
         }
 
         .warning {
-            background-color: rgba(255, 193, 7, 0.2);
-            border-left: 5px solid #ffc107;
-            padding: 15px;
+            background-color: rgba(243, 156, 18, 0.08);
+            border-left: 4px solid var(--cor-alerta);
+            padding: 18px;
             margin-bottom: 25px;
             font-size: 0.9rem;
+            border-radius: 6px;
+            color: #f7b731;
         }
 
-        /* --- Estilização Customizada do Checklist --- */
+        /* --- Estilização do Checklist --- */
 
         .checklist {
             list-style: none;
             padding: 0;
         }
 
-        /* O segredo: usamos o seletor :has() para mudar o fundo do card pai quando o filho está marcado */
         .checklist-item {
             display: flex;
             align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 10px;
-            border-radius: 8px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 12px;
+            border-radius: 12px;
             cursor: pointer;
             position: relative;
-            transition: all 0.4s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
         }
 
-        /* Quando o checkbox dentro do item está marcado, o fundo do card muda */
         .checklist-item:has(input:checked) {
-            background: rgba(46, 204, 113, 0.2); /* Fundo verde transparente */
-            border-color: var(--verde-sucesso);
+            background: var(--cor-fundo-checkbox-checked);
+            border-color: rgba(26, 188, 156, 0.3);
         }
 
         .checklist-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
         }
 
         .checklist-item input[type="checkbox"] {
             position: absolute;
             opacity: 0;
-            width: 0;
-            height: 0;
         }
 
         .checklist-item label {
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             flex-grow: 1;
-            padding-left: 40px;
+            padding-left: 42px;
             position: relative;
-            font-weight: 500;
         }
 
-        /* Quadrado do Checkbox */
         .checklist-item label::before {
             content: '';
             position: absolute;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
-            height: 25px;
-            width: 25px;
-            background-color: rgba(255,255,255,0.1);
-            border: 2px solid var(--cinza-checkbox);
-            border-radius: 6px;
-            transition: all 0.3s;
+            height: 24px;
+            width: 24px;
+            background-color: #0d161a;
+            border: 2px solid var(--cor-checkbox);
+            border-radius: 7px;
+            transition: 0.3s;
         }
 
-        /* O "V" de concluído */
         .checklist-item label::after {
             content: '';
             position: absolute;
             left: 9px;
             top: 50%;
-            width: 6px;
-            height: 12px;
-            border: solid var(--branco);
+            width: 5px;
+            height: 10px;
+            border: solid var(--cor-destaque-hover);
             border-width: 0 3px 3px 0;
             transform: translateY(-55%) rotate(45deg) scale(0);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Estilo do checkbox marcado */
         .checklist-item input:checked + label::before {
-            background-color: var(--verde-sucesso);
-            border-color: var(--verde-sucesso);
+            border-color: var(--cor-destaque-hover);
+            background-color: rgba(26, 188, 156, 0.1);
         }
 
         .checklist-item input:checked + label::after {
@@ -154,39 +159,52 @@
 
         .btn-download {
             display: inline-block;
-            padding: 15px 30px;
-            background-color: var(--azul-claro);
-            color: var(--azul-escuro);
+            padding: 18px 35px;
+            background: linear-gradient(135deg, var(--cor-destaque-principal) 0%, #2ecc71 100%);
+            color: #fff;
             text-decoration: none;
             font-weight: bold;
-            border-radius: 50px;
+            border-radius: 14px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(26, 188, 156, 0.2);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-download:hover {
-            background-color: var(--branco);
             transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(26, 188, 156, 0.4);
+            filter: brightness(1.05);
         }
 
         .instrucoes-lista {
             list-style: none;
             padding-left: 0;
-            color: #eee;
+            color: #b0bec5;
         }
 
         .instrucoes-lista li {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             display: flex;
-            align-items: flex-start;
+            line-height: 1.6;
         }
 
         .instrucoes-lista li::before {
-            content: "→";
-            color: var(--azul-claro);
-            margin-right: 10px;
-            font-weight: bold;
+            content: "◆";
+            color: var(--cor-destaque-hover);
+            margin-right: 15px;
+            font-size: 0.7rem;
+            margin-top: 6px;
+        }
+
+        table thead tr {
+            background: #142129 !important;
+            color: var(--cor-destaque-hover) !important;
+        }
+
+        table td {
+            border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+            color: #b0bec5;
         }
 
     </style>
@@ -225,16 +243,16 @@
             </ul>
         </section>
         
-        <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 40px 0;">
+        <hr style="border: 0; height: 1px; background: rgba(26, 188, 156, 0.1); margin: 40px 0;">
 
         <section id="passo2">
             <h2>2. Baixar a Mídia do Windows 10</h2>
             
-            <p style="line-height: 1.6; color: #ddd;">
+            <p style="line-height: 1.6; color: #b0bec5;">
                 Para formatar, você precisa da imagem oficial do sistema (ISO). A Microsoft fornece uma ferramenta que já baixa e prepara o pendrive automaticamente.
             </p>
 
-            <div style="background: rgba(0, 210, 255, 0.1); border-left: 4px solid var(--azul-claro); padding: 15px; margin: 20px 0; font-size: 0.95rem;">
+            <div style="background: rgba(255, 255, 255, 0.03); border-left: 4px solid var(--cor-destaque-principal); padding: 15px; margin: 20px 0; font-size: 0.95rem; border-radius: 4px;">
                 <strong>Dica:</strong> Você precisará de um pendrive vazio de pelo menos <strong>8GB</strong>.
             </div>
 
@@ -252,17 +270,17 @@
             </ul>
         </section>
         
-        <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 40px 0;">
+        <hr style="border: 0; height: 1px; background: rgba(26, 188, 156, 0.1); margin: 40px 0;">
 
         <section id="passo3">
             <h2>3. Prioridade de Boot (BIOS/UEFI)</h2>
             
-            <p style="line-height: 1.6; color: #ddd;">
+            <p style="line-height: 1.6; color: #b0bec5;">
                 Agora você precisa dizer ao computador para iniciar pelo <strong>Pendrive</strong> e não pelo HD/SSD interno.
             </p>
 
             <div class="instrucoes-lista">
-                <ol style="padding-left: 20px; color: #eee;">
+                <ol style="padding-left: 20px; color: #b0bec5;">
                     <li style="margin-bottom: 15px;">Insira o pendrive no PC desligado.</li>
                     <li style="margin-bottom: 15px;">Ligue o computador e comece a apertar repetidamente a <strong>Tecla de Boot</strong> (veja a tabela abaixo).</li>
                     <li style="margin-bottom: 15px;">No menu que aparecer, selecione o seu pendrive (geralmente aparece como "USB Device" ou o nome da marca do pendrive).</li>
@@ -270,41 +288,39 @@
             </div>
 
             <div style="overflow-x: auto; margin-top: 25px;">
-                <table style="width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden; font-size: 0.9rem;">
+                <table style="width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; font-size: 0.9rem;">
                     <thead>
-                        <tr style="background: var(--azul-claro); color: var(--azul-escuro);">
-                            <th style="padding: 10px; text-align: left;">Marca do PC/Placa-Mãe</th>
-                            <th style="padding: 10px; text-align: center;">Tecla de Boot</th>
+                        <tr style="background: var(--cor-destaque-principal); color: #fff;">
+                            <th style="padding: 15px; text-align: left;">Marca do PC/Placa-Mãe</th>
+                            <th style="padding: 15px; text-align: center;">Tecla de Boot</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <td style="padding: 10px;">ASUS / Gigabyte / Dell</td>
-                            <td style="padding: 10px; text-align: center; font-weight: bold;">F12</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <td style="padding: 10px;">HP</td>
-                            <td style="padding: 10px; text-align: center; font-weight: bold;">F9 ou ESC</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <td style="padding: 10px;">Lenovo</td>
-                            <td style="padding: 10px; text-align: center; font-weight: bold;">F12 ou Botão Novo</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <td style="padding: 10px;">Samsung / Acer</td>
-                            <td style="padding: 10px; text-align: center; font-weight: bold;">F12 ou F2</td>
+                        <tr>
+                            <td style="padding: 12px 15px;">ASUS / Gigabyte / Dell</td>
+                            <td style="padding: 12px 15px; text-align: center; font-weight: bold;">F12</td>
                         </tr>
                         <tr>
-                            <td style="padding: 10px;">Positivo / Intelbras</td>
-                            <td style="padding: 10px; text-align: center; font-weight: bold;">F11 ou F7</td>
+                            <td style="padding: 12px 15px;">HP</td>
+                            <td style="padding: 12px 15px; text-align: center; font-weight: bold;">F9 ou ESC</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 15px;">Lenovo</td>
+                            <td style="padding: 12px 15px; text-align: center; font-weight: bold;">F12 ou Botão Novo</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 15px;">Samsung / Acer</td>
+                            <td style="padding: 12px 15px; text-align: center; font-weight: bold;">F12 ou F2</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 15px;">Positivo / Intelbras</td>
+                            <td style="padding: 12px 15px; text-align: center; font-weight: bold;">F11 ou F7</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            
-
-            <div class="info-box" style="background: rgba(255, 255, 255, 0.05); border-left: 4px solid #ffc107; padding: 15px; margin-top: 25px; font-size: 0.85rem; color: #ffc107;">
+            <div class="info-box" style="background: rgba(243, 156, 18, 0.05); border-left: 4px solid #feca57; padding: 15px; margin-top: 25px; font-size: 0.85rem; color: #feca57; border-radius: 4px;">
                 <strong>Dica:</strong> Se o menu de boot não aparecer, você terá que entrar na BIOS (geralmente tecla <strong>DEL</strong> ou <strong>F2</strong>) e mudar a ordem manualmente na aba "Boot".
             </div>
         </section>
