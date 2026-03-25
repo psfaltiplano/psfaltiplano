@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Tabela A4 Ajustável</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e9ecef; padding: 20px; color: #333; }
+        
+        /* Painel de Controle */
+        .controls { 
+            background: white; padding: 25px; border-radius: 12px; 
+            max-width: 900px; margin: 0 auto 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;
+            justify-content: center;
+        }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.9rem; font-weight: bold; color: #555; }
+        input { padding: 10px; border: 1px solid #ced4da; border-radius: 6px; font-size: 1rem; }
+        
+        /* Slider Styling */
+        input[type=range] { cursor: pointer; width: 150px; }
+
+        button { 
+            padding: 12px 24px; cursor: pointer; border: none; border-radius: 6px; 
+            font-weight: bold; transition: 0.3s; font-size: 1rem;
+        }
+        .btn-update { background: #2ecc71; color: white; }
+        .btn-update:hover { background: #27ae60; }
+        .btn-pdf { background: #3498db; color: white; }
+        .btn-pdf:hover { background: #2980b9; }
+
+        /* Área da Folha A4 */
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            margin: 0 auto;
+            display: flex;
+            align-items: center; /* Centraliza verticalmente */
+            justify-content: center; /* Centraliza horizontalmente */
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Container da Tabela (o que será redimensionado) */
+        #table-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            border: 2px solid black;
+            transform-origin: center; /* Redimensiona a partir do centro */
+            transition: transform 0.1s ease-out;
+        }
+
+        .cell {
+            border: 2px solid black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 42mm; /* 210 / 5 */
+            height: 29.7mm; /* 297 / 10 */
+            box-sizing: border-box;
+            text-align: center;
+            background: white;
+        }
+
+        .cell .number { font-size: 32pt; font-weight: 800; line-height: 1; margin: 0; }
+        .cell .label { font-size: 10pt; font-weight: 600; margin-top: 5px; text-transform: uppercase; }
+
+        /* Truque para bordas não dobrarem de espessura */
+        .cell { margin: -1px; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .controls { display: none; }
+            .a4-page { box-shadow: none; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <div class="input-group">
+            <label>Nº Inicial:</label>
+            <input type="number" id="startNum" value="1" style="width: 70px;">
+        </div>
+        <div class="input-group">
+            <label>Texto:</label>
+            <input type="text" id="textLabel" value="Altiplano">
+        </div>
+        <div class="input-group">
+            <label>Tamanho da Tabela: <span id="zoomVal">100</span>%</label>
+            <input type="range" id="zoomSlider" min="10" max="100" value="100">
+        </div>
+        <button class="btn-update" onclick="generateGrid()">Atualizar</button>
+        <button class="btn-pdf" onclick="downloadPDF()">Baixar PDF</button>
+    </div>
+
+    <div class="a4-page" id="page">
+        <div id="table-container">
+            </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('zoomSlider');
+        const zoomDisplay = document.getElementById('zoomVal');
+        const table = document.getElementById('table-container');
+
+        // Função para atualizar o tamanho (escala)
+        slider.oninput = function() {
+            const scale = this.value / 100;
+            zoomDisplay.innerText = this.value;
+            table.style.transform = `scale(${scale})`;
+        };
+
+        function generateGrid() {
+            const startNum = parseInt(document.getElementById('startNum').value);
+            const labelText = document.getElementById('textLabel').value;
+            
+            table.innerHTML = ''; 
+
+            for (let i = 0; i < 50; i++) {
+                const currentNum = (startNum + i).toString().padStart(2, '0');
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.innerHTML = `
+                    <div class="number">${currentNum}</div>
+                    <div class="label">${labelText}</div>
+                `;
+                table.appendChild(cell);
+            }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('page');
+            const opt = {
+                margin: 0,
+                filename: 'tabela-personalizada.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Iniciar
+        generateGrid();
+    </script>
+</body>
+</html>
