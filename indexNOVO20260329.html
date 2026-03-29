@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="logos/174459704290.png">
+    <title>Receitas</title>
+    <style>
+        body {
+            margin: 0; padding: 15px; display: flex; flex-direction: row;
+            flex-wrap: wrap; justify-content: center; align-items: flex-start;
+            gap: 25px 15px; background-color: #0a192f;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .separador-grupo { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; }
+
+        h2 { 
+            width: 100%; color: #ffffff; font-size: 1.5rem; margin: 20px 0 10px 0; 
+            padding-left: 10px; border-left: 4px solid #3498db; 
+        }
+
+        .paciente-obs {
+            width: 100%; font-size: 1.1rem; color: #ffffff;
+            background-color: #112240; border-radius: 10px;
+            padding: 12px; margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+        }
+
+        .foto-container {
+            width: calc(50% - 7.5px); 
+            box-sizing: border-box; 
+            background-color: #112240; 
+            border-radius: 12px;
+            padding: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* NOVA REGRA: Força o container a ocupar a linha toda se for áudio */
+        .foto-container.full-width {
+            width: 100%;
+        }
+
+        .numero-foto { font-weight: 600; font-size: 1.1rem; color: #ffffff; margin-bottom: 8px; align-self: flex-start; }
+        img { width: 100%; height: auto; border-radius: 8px; display: block; }
+        
+        audio { width: 100%; margin-top: 10px; }
+        .link-pdf { 
+            color: #3498db; text-decoration: underline; 
+            display: flex; align-items: center; gap: 10px;
+            padding: 20px; background: rgba(255,255,255,0.05);
+            border-radius: 8px; width: 70%; justify-content: center;
+        }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <script>
+        async function carregarDados() {
+            try {
+                const resposta = await fetch('images/pacientes.csv'); 
+                const texto = await resposta.text();
+                const linhas = texto.split('\n').slice(1);
+                const containerPrincipal = document.body;
+                
+                let dadosAgrupados = {};
+
+                linhas.forEach(linha => {
+                    if (linha.trim() === "") return;
+                    const colunas = linha.split(',');
+                    const nome = colunas[0]?.trim();
+                    const numero = colunas[1]?.trim();
+                    const arquivo = colunas[2]?.trim();
+                    const obs = colunas[3]?.trim();
+
+                    if (!dadosAgrupados[nome]) {
+                        dadosAgrupados[nome] = { observacoes: [], midias: [] };
+                    }
+                    if (obs) dadosAgrupados[nome].observacoes.push(obs);
+                    if (arquivo && arquivo !== "nenhum") {
+                        dadosAgrupados[nome].midias.push({ numero, arquivo });
+                    }
+                });
+
+                for (const paciente in dadosAgrupados) {
+                    containerPrincipal.insertAdjacentHTML('beforeend', `<div class="separador-grupo"></div><h2>${paciente}</h2>`);
+
+                    dadosAgrupados[paciente].observacoes.forEach(textoObs => {
+                        const divObs = document.createElement('div');
+                        divObs.className = 'paciente-obs';
+                        divObs.innerHTML = `<strong>•</strong> ${textoObs}`;
+                        containerPrincipal.appendChild(divObs);
+                    });
+
+                    dadosAgrupados[paciente].midias.forEach(item => {
+                        const caminho = `images/${item.arquivo}`;
+                        const extensao = item.arquivo.split('.').pop().toLowerCase();
+                        let conteudoHTML = '';
+                        let classeAdicional = ''; // Variável para controlar a largura
+
+                        if (['jpg', 'jpeg', 'png', 'gif'].includes(extensao)) {
+                            conteudoHTML = `<a href="${caminho}" target="_blank"><img src="${caminho}" alt="Receita"></a>`;
+                        } else if (extensao === 'mp3') {
+                            conteudoHTML = `<audio controls src="${caminho}"></audio>`;
+                            classeAdicional = 'full-width'; // Aplica a classe para ocupar 100%
+                        } else if (extensao === 'pdf') {
+                            conteudoHTML = `<a href="${caminho}" target="_blank" class="link-pdf">📄 Abrir Receita em PDF</a>`;
+                        }
+
+                        const htmlCard = `
+                            <div class="foto-container ${classeAdicional}">
+                                ${item.numero ? `<span class="numero-foto">${item.numero}</span>` : ''}
+                                ${conteudoHTML}
+                            </div>
+                        `;
+                        containerPrincipal.insertAdjacentHTML('beforeend', htmlCard);
+                    });
+                }
+
+            } catch (erro) {
+                console.error("Erro:", erro);
+            }
+        }
+
+        carregarDados();
+    </script>
+</body>
+</html>
