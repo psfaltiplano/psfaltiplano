@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="logos/174459704290.png">
     <title>Receitas</title>
     <style>
@@ -20,12 +21,19 @@
             padding-left: 10px; border-left: 4px solid #3498db; 
         }
 
+        /* ATUALIZADO: Fonte DIN Round aplicada aqui */
+        /* ATUALIZADO: Fonte DIN Round aplicada aqui */
+        /* ATUALIZADO: Fonte DIN Round aplicada aqui */
+        /* ATUALIZADO: Fonte DIN Round aplicada aqui */
+      
         .paciente-obs {
             width: 100%; font-size: 1.1rem; color: #ffffff;
             background-color: #112240; border-radius: 10px;
             padding: 12px; margin-bottom: 8px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-sizing: border-box;
+            font-family: 'Nunito', 'DIN Round', sans-serif; /* Fallback para DIN Round se instalada localmente */
+            letter-spacing: 0.3px;
         }
 
         .foto-container {
@@ -40,7 +48,6 @@
             align-items: center;
         }
 
-        /* NOVA REGRA: Força o container a ocupar a linha toda se for áudio */
         .foto-container.full-width {
             width: 100%;
         }
@@ -101,13 +108,13 @@
                         const caminho = `images/${item.arquivo}`;
                         const extensao = item.arquivo.split('.').pop().toLowerCase();
                         let conteudoHTML = '';
-                        let classeAdicional = ''; // Variável para controlar a largura
+                        let classeAdicional = ''; 
 
                         if (['jpg', 'jpeg', 'png', 'gif'].includes(extensao)) {
                             conteudoHTML = `<a href="${caminho}" target="_blank"><img src="${caminho}" alt="Receita"></a>`;
                         } else if (extensao === 'mp3') {
                             conteudoHTML = `<audio controls src="${caminho}"></audio>`;
-                            classeAdicional = 'full-width'; // Aplica a classe para ocupar 100%
+                            classeAdicional = 'full-width'; 
                         } else if (extensao === 'pdf') {
                             conteudoHTML = `<a href="${caminho}" target="_blank" class="link-pdf">📄 Abrir Receita em PDF</a>`;
                         }
