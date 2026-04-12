@@ -3,136 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Filas</title>
-    <link rel="shortcut icon" href="logos/174459704291.png">
- <style>
-    /* Reset e Base */
-    * { box-sizing: border-box; }
-    body {
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        margin: 0;
-        padding: 15px;
-        background-color: #f0f2f5;
-        color: #333;
-    }
+    <title>Gestão de Filas - PSF</title>
+    <style>
+        :root {
+            --bg-body: #f4f4f4;
+            --bg-card: #ffffff;
+            --text-main: #333333;
+            --border-color: #dddddd;
+            --tab-inactive: #eeeeee;
+        }
 
-    h1 { text-align: center; font-size: 1.5rem; margin-bottom: 20px; }
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --border-color: #333333;
+            --tab-inactive: #2c2c2c;
+        }
 
-    /* Abas Adaptáveis */
-    .tab-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 5px;
-        margin-bottom: 20px;
-    }
-    .tab-button {
-        background-color: #e4e6eb;
-        border: none;
-        padding: 12px 5px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: all 0.2s;
-    }
-    .tab-button.active {
-        background-color: #007bff;
-        color: white;
-        box-shadow: 0 4px 6px rgba(0,123,255,0.2);
-    }
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
 
-    /* Conteúdo das Abas */
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.3s ease;
-    }
-    .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 80px;
+        }
 
-    /* Seção de Entrada */
-    .input-section {
-        background: white;
-        padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
-    }
-    .input-section label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
-    .input-section input, .input-section select {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px; /* Evita zoom automático no iPhone */
-    }
-    .input-section button {
-        width: 100%;
-        background-color: #28a745;
-        color: white;
-        padding: 14px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 16px;
-    }
+        h1 { text-align: center; font-size: 1.5rem; }
 
-    /* Lista de Fila (Cards) */
-    .queue-list { padding: 0; margin: 0; }
-    .queue-item {
-        background: white;
-        margin-bottom: 12px;
-        padding: 15px;
-        border-radius: 12px;
-        border-left: 8px solid #ddd;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column; /* Transforma em coluna no mobile */
-        gap: 12px;
-    }
-    .queue-item.prioridade { border-left-color: #dc3545; background-color: #fff5f5; }
-    .queue-item.normal { border-left-color: #28a745; background-color: #f5fff5; }
-    .queue-item.atendido { opacity: 0.5; filter: grayscale(1); }
+        /* Botão Dark Mode */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 20px;
+            z-index: 1000;
+        }
 
-    .queue-item span {
-        font-size: 1.1rem;
-        font-weight: bold;
-        word-break: break-word;
-    }
+        /* Abas em Grade para Mobile */
+        .tab-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 5px;
+            margin-bottom: 20px;
+        }
 
-    /* Grade de Botões de Ação */
-    .actions {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Dois botões por linha */
-        gap: 8px;
-    }
-    .actions button {
-        padding: 10px;
-        font-size: 13px;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .tab-button {
+            background-color: var(--tab-inactive);
+            border: none;
+            padding: 12px 5px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-weight: bold;
+        }
 
-    /* Cores dos botões mobile */
-    .mark-attended { background-color: #28a745; color: white; grid-column: span 2; }
-    .edit-patient { background-color: #007bff; color: white; }
-    .delete-patient { background-color: #dc3545; color: white; }
-    .move-up, .move-down { background-color: #ffc107; color: #333; }
+        .tab-button.active {
+            background-color: #007bff;
+            color: white;
+        }
 
-    /* Ajuste para inputs de edição */
-    .editable-name {
-        width: 100%;
-        padding: 8px;
-        font-size: 16px;
-    }
-</style>
+        .tab-content {
+            display: none;
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
+        .tab-content.active { display: block; }
+
+        /* Seção de Entrada */
+        .input-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: rgba(150, 150, 150, 0.05);
+        }
+
+        .input-section label { display: block; margin-bottom: 8px; font-weight: bold; }
+
+        .input-section input, .input-section select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 16px;
+        }
+
+        .input-section button {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Lista em Cards Mobile */
+        .queue-list { list-style: none; padding: 0; }
+
+        .queue-item {
+            background-color: var(--bg-card);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 6px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .queue-item.prioridade { border-left-color: #dc3545; }
+        .queue-item.normal { border-left-color: #28a745; }
+        .queue-item.atendido { opacity: 0.4; text-decoration: line-through; }
+
+        .queue-item span { font-size: 1.1rem; font-weight: bold; }
+
+        /* Grade de Ações */
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .actions button {
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .mark-attended { background-color: #28a745; grid-column: span 2; }
+        .edit-patient { background-color: #007bff; }
+        .delete-patient { background-color: #dc3545; }
+        .move-up, .move-down { background-color: #ffc107; color: #333 !important; }
+
+        .editable-name {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid #007bff;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
     <h1>Gestão de Filas</h1>
 
     <div class="tab-container">
@@ -149,9 +189,7 @@
     <div id="medica" class="tab-content active">
         <h2>Fila da Médica</h2>
         <div class="input-section">
-            <label for="patientNameMedica">Nome do Paciente:</label>
             <input type="text" id="patientNameMedica" placeholder="Nome do paciente">
-            <label for="priorityMedica">Prioridade:</label>
             <select id="priorityMedica">
                 <option value="normal">Normal</option>
                 <option value="prioridade">Prioridade</option>
@@ -164,9 +202,7 @@
     <div id="vacinas" class="tab-content">
         <h2>Fila de Vacinas</h2>
         <div class="input-section">
-            <label for="patientNameVacinas">Nome do Paciente:</label>
             <input type="text" id="patientNameVacinas" placeholder="Nome do paciente">
-            <label for="priorityVacinas">Prioridade:</label>
             <select id="priorityVacinas">
                 <option value="normal">Normal</option>
                 <option value="prioridade">Prioridade</option>
@@ -176,98 +212,7 @@
         <ul id="queueListVacinas" class="queue-list"></ul>
     </div>
 
-    <div id="enfermeira" class="tab-content">
-        <h2>Fila da Enfermeira</h2>
-        <div class="input-section">
-            <label for="patientNameEnfermeira">Nome do Paciente:</label>
-            <input type="text" id="patientNameEnfermeira" placeholder="Nome do paciente">
-            <label for="priorityEnfermeira">Prioridade:</label>
-            <select id="priorityEnfermeira">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('enfermeira')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListEnfermeira" class="queue-list"></ul>
-    </div>
-
-    <div id="psicologa" class="tab-content">
-        <h2>Fila da Psicóloga</h2>
-        <div class="input-section">
-            <label for="patientNamePsicologa">Nome do Paciente:</label>
-            <input type="text" id="patientNamePsicologa" placeholder="Nome do paciente">
-            <label for="priorityPsicologa">Prioridade:</label>
-            <select id="priorityPsicologa">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('psicologa')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListPsicologa" class="queue-list"></ul>
-    </div>
-
-    <div id="nutricionista" class="tab-content">
-        <h2>Fila da Nutricionista</h2>
-        <div class="input-section">
-            <label for="patientNameNutricionista">Nome do Paciente:</label>
-            <input type="text" id="patientNameNutricionista" placeholder="Nome do paciente">
-            <label for="priorityNutricionista">Prioridade:</label>
-            <select id="priorityNutricionista">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('nutricionista')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListNutricionista" class="queue-list"></ul>
-    </div>
-
-    <div id="dentista" class="tab-content">
-        <h2>Fila do Dentista</h2>
-        <div class="input-section">
-            <label for="patientNameDentista">Nome do Paciente:</label>
-            <input type="text" id="patientNameDentista" placeholder="Nome do paciente">
-            <label for="priorityDentista">Prioridade:</label>
-            <select id="priorityDentista">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('dentista')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListDentista" class="queue-list"></ul>
-    </div>
-
-    <div id="novo1" class="tab-content">
-        <h2>Fila Novo 1</h2>
-        <div class="input-section">
-            <label for="patientNameNovo1">Nome do Paciente:</label>
-            <input type="text" id="patientNameNovo1" placeholder="Nome do paciente">
-            <label for="priorityNovo1">Prioridade:</label>
-            <select id="priorityNovo1">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('novo1')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListNovo1" class="queue-list"></ul>
-    </div>
-
-    <div id="novo2" class="tab-content">
-        <h2>Fila Novo 2</h2>
-        <div class="input-section">
-            <label for="patientNameNovo2">Nome do Paciente:</label>
-            <input type="text" id="patientNameNovo2" placeholder="Nome do paciente">
-            <label for="priorityNovo2">Prioridade:</label>
-            <select id="priorityNovo2">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('novo2')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListNovo2" class="queue-list"></ul>
-    </div>
-
     <script>
-        // Objeto para armazenar os contadores de senhas para cada fila
         const queueCounters = {
             medica: { normal: 0, prioridade: 0 },
             vacinas: { normal: 0, prioridade: 0 },
@@ -279,167 +224,103 @@
             novo2: { normal: 0, prioridade: 0 }
         };
 
+        // Gerenciamento de Tema
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Carregar tema salvo
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
         function openTab(tabName) {
-            var i, tabContent, tabButtons;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].classList.remove("active");
-            }
-            tabButtons = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tabButtons.length; i++) {
-                tabButtons[i].classList.remove("active");
-            }
-            document.getElementById(tabName).classList.add("active");
+            const contents = document.getElementsByClassName("tab-content");
+            for (let c of contents) c.classList.remove("active");
+            
+            const buttons = document.getElementsByClassName("tab-button");
+            for (let b of buttons) b.classList.remove("active");
+            
+            const target = document.getElementById(tabName);
+            if(target) target.classList.add("active");
             event.currentTarget.classList.add("active");
         }
 
         function addPatient(queueId) {
-            // Função para capitalizar a primeira letra de uma string
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
+            const idSuffix = queueId.charAt(0).toUpperCase() + queueId.slice(1);
+            const input = document.getElementById('patientName' + idSuffix);
+            const prioritySelect = document.getElementById('priority' + idSuffix);
+            const queueList = document.getElementById('queueList' + idSuffix);
 
-            const patientNameInput = document.getElementById('patientName' + capitalizeFirstLetter(queueId));
-            const prioritySelect = document.getElementById('priority' + capitalizeFirstLetter(queueId));
-            const queueList = document.getElementById('queueList' + capitalizeFirstLetter(queueId));
+            if (!input.value.trim()) return alert('Insira o nome!');
 
-            const patientName = patientNameInput.value.trim();
             const priority = prioritySelect.value;
+            queueCounters[queueId][priority]++;
+            const senha = `${queueCounters[queueId][priority]}${priority[0].toUpperCase()}`;
 
-            if (patientName === '') {
-                alert('Por favor, insira o nome do paciente.');
-                return;
-            }
-
-            let senha = '';
-            if (priority === 'normal') {
-                queueCounters[queueId].normal++;
-                senha = `${queueCounters[queueId].normal}N`;
-            } else { // prioridade
-                queueCounters[queueId].prioridade++;
-                senha = `${queueCounters[queueId].prioridade}P`;
-            }
-
-            const listItem = document.createElement('li');
-            listItem.classList.add('queue-item', priority);
-            listItem.setAttribute('data-priority-type', priority); // Adiciona um atributo para o tipo de prioridade
-
-            // O span que exibirá o nome e a senha
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = `${senha} - ${patientName}`;
-            nameSpan.setAttribute('data-senha', senha); // Armazena a senha para uso futuro
-            nameSpan.setAttribute('data-original-name', patientName); // Armazena o nome original
-
-            const actionsDiv = document.createElement('div');
-            actionsDiv.classList.add('actions');
-            actionsDiv.innerHTML = `
-                <button class="mark-attended" onclick="toggleAttended(this)">Atendido</button>
-                <button class="edit-patient" onclick="editPatient(this)">Editar</button>
-                <button class="move-up" onclick="movePatient(this, 'up')">⬆️</button>
-                <button class="move-down" onclick="movePatient(this, 'down')">⬇️</button>
-                <button class="delete-patient" onclick="deletePatient(this)">Excluir</button>
+            const li = document.createElement('li');
+            li.className = `queue-item ${priority}`;
+            li.innerHTML = `
+                <span data-senha="${senha}" data-original-name="${input.value}">${senha} - ${input.value}</span>
+                <div class="actions">
+                    <button class="mark-attended" onclick="toggleAttended(this)">Atendido</button>
+                    <button class="edit-patient" onclick="editPatient(this)">Editar</button>
+                    <button class="move-up" onclick="movePatient(this, 'up')">⬆️</button>
+                    <button class="move-down" onclick="movePatient(this, 'down')">⬇️</button>
+                    <button class="delete-patient" onclick="deletePatient(this)">Excluir</button>
+                </div>
             `;
-
-            listItem.appendChild(nameSpan);
-            listItem.appendChild(actionsDiv);
-            queueList.appendChild(listItem);
-
-            patientNameInput.value = ''; // Limpa o campo de nome
+            queueList.appendChild(li);
+            input.value = '';
         }
 
-        function toggleAttended(button) {
-            const listItem = button.closest('.queue-item');
-            listItem.classList.toggle('atendido');
-            if (listItem.classList.contains('atendido')) {
-                button.textContent = 'Desfazer';
-                button.style.backgroundColor = '#ffc107'; // Cor de alerta
-                button.style.color = '#333';
-            } else {
-                button.textContent = 'Atendido';
-                button.style.backgroundColor = '#28a745'; // Cor original
-                button.style.color = 'white';
-            }
+        function toggleAttended(btn) {
+            const item = btn.closest('.queue-item');
+            item.classList.toggle('atendido');
+            btn.textContent = item.classList.contains('atendido') ? 'Desfazer' : 'Atendido';
         }
 
-        function movePatient(button, direction) {
-            const listItem = button.closest('.queue-item');
-            const parentList = listItem.parentNode;
-            const items = Array.from(parentList.children);
-            const index = items.indexOf(listItem);
-
-            if (direction === 'up' && index > 0) {
-                parentList.insertBefore(listItem, items[index - 1]);
-            } else if (direction === 'down' && index < items.length - 1) {
-                parentList.insertBefore(items[index + 1], listItem);
-            }
+        function movePatient(btn, dir) {
+            const item = btn.closest('.queue-item');
+            const list = item.parentNode;
+            if (dir === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
+            if (dir === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
         }
 
-        function deletePatient(button) {
-            const listItem = button.closest('.queue-item');
-            if (confirm('Tem certeza que deseja excluir este paciente da fila?')) {
-                listItem.remove();
-            }
+        function deletePatient(btn) {
+            if (confirm('Excluir paciente?')) btn.closest('.queue-item').remove();
         }
 
-        function editPatient(button) {
-            const listItem = button.closest('.queue-item');
-            const nameSpan = listItem.querySelector('span'); // Pega o span que contém o nome e a senha
-            const currentText = nameSpan.textContent;
-            const senha = nameSpan.getAttribute('data-senha'); // Pega a senha armazenada
-            const originalName = nameSpan.getAttribute('data-original-name'); // Pega o nome original
+        function editPatient(btn) {
+            const item = btn.closest('.queue-item');
+            const span = item.querySelector('span');
+            const originalName = span.getAttribute('data-original-name');
+            const senha = span.getAttribute('data-senha');
 
-            // Cria um campo de input para edição
-            const inputField = document.createElement('input');
-            inputField.type = 'text';
-            inputField.classList.add('editable-name');
-            inputField.value = originalName; // Define o valor inicial como o nome do paciente
-            inputField.maxLength = 50; // Limita o tamanho do nome (opcional)
+            const input = document.createElement('input');
+            input.className = 'editable-name';
+            input.value = originalName;
+            span.replaceWith(input);
+            input.focus();
 
-            // Substitui o span pelo input
-            nameSpan.replaceWith(inputField);
-            inputField.focus(); // Coloca o foco no campo de input
-
-            // Altera o botão "Editar" para "Salvar"
-            button.textContent = 'Salvar';
-            button.onclick = function() { saveEditedPatient(this); }; // Altera a função do clique
-
-            // Opcional: Adiciona um listener para salvar ao pressionar Enter
-            inputField.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    saveEditedPatient(button);
-                }
-            });
+            btn.textContent = 'Salvar';
+            btn.onclick = function() {
+                const newName = input.value.trim() || originalName;
+                const newSpan = document.createElement('span');
+                newSpan.setAttribute('data-senha', senha);
+                newSpan.setAttribute('data-original-name', newName);
+                newSpan.textContent = `${senha} - ${newName}`;
+                input.replaceWith(newSpan);
+                btn.textContent = 'Editar';
+                btn.onclick = function() { editPatient(this); };
+            };
         }
-
-        function saveEditedPatient(button) {
-            const listItem = button.closest('.queue-item');
-            const inputField = listItem.querySelector('.editable-name');
-            const newName = inputField.value.trim();
-
-            if (newName === '') {
-                alert('O nome do paciente não pode ficar vazio.');
-                inputField.focus();
-                return;
-            }
-
-            const senha = listItem.querySelector('span') ? listItem.querySelector('span').getAttribute('data-senha') : ''; // Pega a senha se o span ainda existir
-            const newNameSpan = document.createElement('span');
-            newNameSpan.textContent = `${senha} - ${newName}`;
-            newNameSpan.setAttribute('data-senha', senha);
-            newNameSpan.setAttribute('data-original-name', newName); // Atualiza o nome original
-
-            // Substitui o input de volta para um span
-            inputField.replaceWith(newNameSpan);
-
-            // Restaura o botão "Salvar" para "Editar"
-            button.textContent = 'Editar';
-            button.onclick = function() { editPatient(this); }; // Restaura a função do clique
-        }
-
-        // Abrir a primeira aba por padrão ao carregar a página
-        document.addEventListener('DOMContentLoaded', (event) => {
-            openTab('medica');
-        });
     </script>
 </body>
 </html>
