@@ -11,6 +11,8 @@
             --text-main: #333333;
             --border-color: #dddddd;
             --tab-inactive: #eeeeee;
+            --danger: #dc3545;
+            --warning: #ffc107;
         }
 
         [data-theme="dark"] {
@@ -32,7 +34,7 @@
             padding-bottom: 80px;
         }
 
-        h1 { text-align: center; font-size: 1.5rem; }
+        h1 { text-align: center; font-size: 1.5rem; margin-bottom: 10px; }
 
         /* Botão Dark Mode */
         .theme-toggle {
@@ -51,7 +53,28 @@
             z-index: 1000;
         }
 
-        /* Abas em Grade para Mobile */
+        /* Seção de Limpeza */
+        .clear-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-clear {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .clear-current { background-color: var(--warning); color: #333; }
+        .clear-all { background-color: var(--danger); }
+
+        /* Abas em Grade */
         .tab-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -94,8 +117,6 @@
             background-color: rgba(150, 150, 150, 0.05);
         }
 
-        .input-section label { display: block; margin-bottom: 8px; font-weight: bold; }
-
         .input-section input, .input-section select {
             width: 100%;
             padding: 12px;
@@ -118,7 +139,7 @@
             font-weight: bold;
         }
 
-        /* Lista em Cards Mobile */
+        /* Lista em Cards */
         .queue-list { list-style: none; padding: 0; }
 
         .queue-item {
@@ -139,12 +160,7 @@
 
         .queue-item span { font-size: 1.1rem; font-weight: bold; }
 
-        /* Grade de Ações */
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
+        .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 
         .actions button {
             padding: 10px;
@@ -175,7 +191,12 @@
 
     <h1>Gestão de Filas</h1>
 
-    <div class="tab-container">
+    <div class="clear-actions">
+        <button class="btn-clear clear-current" onclick="clearCurrentQueue()">Limpar Fila Atual</button>
+        <button class="btn-clear clear-all" onclick="clearAllQueues()">Limpar Tudo</button>
+    </div>
+
+    <div class="tab-container" id="tabContainer">
         <button class="tab-button active" onclick="openTab('medica')">Médica</button>
         <button class="tab-button" onclick="openTab('vacinas')">Vacinas</button>
         <button class="tab-button" onclick="openTab('enfermeira')">Enfermeira</button>
@@ -212,7 +233,87 @@
         <ul id="queueListVacinas" class="queue-list"></ul>
     </div>
 
+    <div id="enfermeira" class="tab-content">
+        <h2>Fila da Enfermeira</h2>
+        <div class="input-section">
+            <input type="text" id="patientNameEnfermeira" placeholder="Nome do paciente">
+            <select id="priorityEnfermeira">
+                <option value="normal">Normal</option>
+                <option value="prioridade">Prioridade</option>
+            </select>
+            <button onclick="addPatient('enfermeira')">Adicionar Paciente</button>
+        </div>
+        <ul id="queueListEnfermeira" class="queue-list"></ul>
+    </div>
+
+    <div id="psicologa" class="tab-content">
+        <h2>Fila da Psicóloga</h2>
+        <div class="input-section">
+            <input type="text" id="patientNamePsicologa" placeholder="Nome do paciente">
+            <select id="priorityPsicologa">
+                <option value="normal">Normal</option>
+                <option value="prioridade">Prioridade</option>
+            </select>
+            <button onclick="addPatient('psicologa')">Adicionar Paciente</button>
+        </div>
+        <ul id="queueListPsicologa" class="queue-list"></ul>
+    </div>
+
+    <div id="nutricionista" class="tab-content">
+        <h2>Fila da Nutricionista</h2>
+        <div class="input-section">
+            <input type="text" id="patientNameNutricionista" placeholder="Nome do paciente">
+            <select id="priorityNutricionista">
+                <option value="normal">Normal</option>
+                <option value="prioridade">Prioridade</option>
+            </select>
+            <button onclick="addPatient('nutricionista')">Adicionar Paciente</button>
+        </div>
+        <ul id="queueListNutricionista" class="queue-list"></ul>
+    </div>
+
+    <div id="dentista" class="tab-content">
+        <h2>Fila do Dentista</h2>
+        <div class="input-section">
+            <input type="text" id="patientNameDentista" placeholder="Nome do paciente">
+            <select id="priorityDentista">
+                <option value="normal">Normal</option>
+                <option value="prioridade">Prioridade</option>
+            </select>
+            <button onclick="addPatient('dentista')">Adicionar Paciente</button>
+        </div>
+        <ul id="queueListDentista" class="queue-list"></ul>
+    </div>
+
+    <div id="novo1" class="tab-content">
+        <h2>Fila Novo 1</h2>
+        <div class="input-section">
+            <input type="text" id="patientNameNovo1" placeholder="Nome do paciente">
+            <select id="priorityNovo1">
+                <option value="normal">Normal</option>
+                <option value="prioridade">Prioridade</option>
+            </select>
+            <button onclick="addPatient('novo1')">Adicionar Paciente</button>
+        </div>
+        <ul id="queueListNovo1" class="queue-list"></ul>
+    </div>
+
+    <div id="novo2" class="tab-content">
+        <h2>Fila Novo 2</h2>
+        <div class="input-section">
+            <input type="text" id="patientNameNovo2" placeholder="Nome do paciente">
+            <select id="priorityNovo2">
+                <option value="normal">Normal</option>
+                <option value="prioridade">Prioridade</option>
+            </select>
+            <button onclick="addPatient('novo2')">Adicionar Paciente</button>
+        </div>
+        <ul id="queueListNovo2" class="queue-list"></ul>
+    </div>
+
     <script>
+        let currentActiveTab = 'medica';
+
         const queueCounters = {
             medica: { normal: 0, prioridade: 0 },
             vacinas: { normal: 0, prioridade: 0 },
@@ -229,27 +330,43 @@
             const body = document.documentElement;
             const currentTheme = body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
         }
 
-        // Carregar tema salvo
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
         function openTab(tabName) {
+            currentActiveTab = tabName;
             const contents = document.getElementsByClassName("tab-content");
             for (let c of contents) c.classList.remove("active");
-            
             const buttons = document.getElementsByClassName("tab-button");
             for (let b of buttons) b.classList.remove("active");
-            
-            const target = document.getElementById(tabName);
-            if(target) target.classList.add("active");
+            document.getElementById(tabName).classList.add("active");
             event.currentTarget.classList.add("active");
+        }
+
+        // Funções de Limpeza
+        function clearCurrentQueue() {
+            if (confirm(`Deseja limpar APENAS a fila de ${currentActiveTab.toUpperCase()} e resetar a senha para 1?`)) {
+                queueCounters[currentActiveTab] = { normal: 0, prioridade: 0 };
+                const idSuffix = currentActiveTab.charAt(0).toUpperCase() + currentActiveTab.slice(1);
+                document.getElementById('queueList' + idSuffix).innerHTML = '';
+            }
+        }
+
+        function clearAllQueues() {
+            if (confirm("ATENÇÃO: Deseja limpar TODAS as filas e resetar todas as senhas para 1?")) {
+                for (let queue in queueCounters) {
+                    queueCounters[queue] = { normal: 0, prioridade: 0 };
+                    const idSuffix = queue.charAt(0).toUpperCase() + queue.slice(1);
+                    const list = document.getElementById('queueList' + idSuffix);
+                    if(list) list.innerHTML = '';
+                }
+            }
         }
 
         function addPatient(queueId) {
@@ -302,13 +419,11 @@
             const span = item.querySelector('span');
             const originalName = span.getAttribute('data-original-name');
             const senha = span.getAttribute('data-senha');
-
             const input = document.createElement('input');
             input.className = 'editable-name';
             input.value = originalName;
             span.replaceWith(input);
             input.focus();
-
             btn.textContent = 'Salvar';
             btn.onclick = function() {
                 const newName = input.value.trim() || originalName;
