@@ -2,485 +2,410 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Filas</title>
-    <link rel="shortcut icon" href="logos/174459704291.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gestão de Filas - Gestos</title>
     <style>
+        :root {
+            --bg-body: #f4f4f4;
+            --bg-card: #ffffff;
+            --text-main: #333333;
+            --border-color: #dddddd;
+            --tab-inactive: #eeeeee;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --primary: #007bff;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --border-color: #333333;
+            --tab-inactive: #2c2c2c;
+        }
+
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; touch-action: pan-y; }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 100px;
+            overflow-x: hidden;
         }
-        .tab-container {
-            display: flex;
-            flex-wrap: wrap; /* Permite que as abas quebrem a linha se houver muitas */
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
+
+        h1 { text-align: center; font-size: 1.2rem; margin-bottom: 10px; opacity: 0.7; }
+
+        /* Menu de Funcionalidades Flutuante */
+        .menu-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
         }
-        .tab-button {
-            background-color: #eee;
+
+        .main-menu-btn {
+            background: var(--primary);
+            color: white;
             border: none;
-            padding: 10px 20px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
             cursor: pointer;
-            font-size: 16px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            margin-right: 5px;
-            margin-bottom: 5px; /* Adicionado para espaçamento em caso de quebra de linha */
-            transition: background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-size: 24px;
         }
-        .tab-button.active {
-            background-color: #fff;
-            border-bottom: 2px solid #007bff;
-            color: #007bff;
-        }
-        .tab-content {
+
+        .menu-options {
             display: none;
-            background-color: #fff;
-            padding: 20px;
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+            width: 220px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .menu-options.active { display: block; }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            margin-bottom: 5px;
+            background: rgba(150,150,150,0.1);
         }
-        .tab-content.active {
-            display: block;
+
+        .menu-item.danger { color: var(--danger); background: rgba(220, 53, 69, 0.1); }
+
+        /* Abas */
+        .tab-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 5px;
+            margin-bottom: 20px;
         }
+
+        .tab-button {
+            background-color: var(--tab-inactive);
+            border: none;
+            padding: 10px 2px;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .tab-button.active { background-color: var(--primary); color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Input Section */
         .input-section {
             margin-bottom: 20px;
             padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            border-radius: 12px;
+            background-color: var(--bg-card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .input-section label {
-            display: block;
-            margin-bottom: 8px;
+
+        .input-section input, .input-section select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 16px;
+        }
+
+        .input-section button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
             font-weight: bold;
         }
-        .input-section input[type="text"],
-        .input-section select {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .input-section button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        .input-section button:hover {
-            background-color: #0056b3;
-        }
-        .queue-list {
-            list-style: none;
-            padding: 0;
-        }
+
+        /* Lista por Gestos */
+        .queue-list { list-style: none; padding: 0; min-height: 100px; }
+
         .queue-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #fff;
+            background-color: var(--bg-card);
             margin-bottom: 10px;
-            padding: 10px 15px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            transition: background-color 0.3s;
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 6px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            user-select: none;
+            transition: transform 0.1s, opacity 0.3s;
         }
-        .queue-item.prioridade {
-            background-color: #ffcccc; /* Vermelho claro para prioridade */
-            border-left: 5px solid #ff0000;
-        }
-        .queue-item.normal {
-            background-color: #ccffcc; /* Verde claro para normal */
-            border-left: 5px solid #008000;
-        }
-        .queue-item.atendido {
-            text-decoration: line-through;
+
+        .queue-item.prioridade { border-left-color: var(--danger); }
+        .queue-item.normal { border-left-color: #28a745; }
+        .queue-item.atendido { opacity: 0.3; text-decoration: line-through; border-left-color: #999; }
+        .queue-item.dragging { opacity: 0.5; transform: scale(1.02); z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+        .queue-item span { font-size: 1.1rem; font-weight: bold; pointer-events: none; }
+
+        .hint {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-bottom: 10px;
             opacity: 0.6;
-            background-color: #f0f0f0;
         }
-        .queue-item span {
-            flex-grow: 1;
-            font-size: 18px;
-            cursor: default; /* Remove o cursor de texto para o span normal */
-        }
-        .queue-item .editable-name {
-            flex-grow: 1;
-            font-size: 18px;
-            border: 1px solid #ccc;
+
+        .editable-name {
+            width: 100%;
             padding: 5px;
-            border-radius: 4px;
-            width: auto;
-        }
-        .queue-item button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            margin-left: 10px;
-            color: #555;
-            transition: color 0.3s;
-        }
-        .queue-item button:hover {
-            color: #000;
-        }
-        .queue-item .actions {
-            display: flex;
-            gap: 5px;
-        }
-        .queue-item .actions button {
-            padding: 5px 8px;
-            font-size: 14px;
-            border-radius: 4px;
-            background-color: #e0e0e0;
-        }
-        .queue-item .actions button.mark-attended {
-            background-color: #28a745;
-            color: white;
-        }
-        .queue-item .actions button.mark-attended:hover {
-            background-color: #218838;
-        }
-        .queue-item .actions button.move-up,
-        .queue-item .actions button.move-down {
-            background-color: #ffc107;
-            color: #333;
-        }
-        .queue-item .actions button.move-up:hover,
-        .queue-item .actions button.move-down:hover {
-            background-color: #e0a800;
-        }
-        .queue-item .actions button.delete-patient {
-            background-color: #dc3545;
-            color: white;
-        }
-        .queue-item .actions button.delete-patient:hover {
-            background-color: #c82333;
-        }
-        .queue-item .actions button.edit-patient {
-            background-color: #007bff;
-            color: white;
-        }
-        .queue-item .actions button.edit-patient:hover {
-            background-color: #0056b3;
+            font-size: 1.1rem;
+            background: transparent;
+            color: inherit;
+            border: 1px solid var(--primary);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
+
+    <div class="menu-container">
+        <button class="main-menu-btn" onclick="toggleMenu()">⚙️</button>
+        <div class="menu-options" id="menuOptions">
+            <div class="menu-item" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>&nbsp; Trocar Tema
+            </div>
+            <div class="menu-item" onclick="clearCurrentQueue()">
+                <span>🧹</span>&nbsp; Limpar Fila Atual
+            </div>
+            <div class="menu-item danger" onclick="clearAllQueues()">
+                <span>⚠️</span>&nbsp; Limpar Tudo
+            </div>
+        </div>
+    </div>
+
     <h1>Gestão de Filas</h1>
+    <p class="hint">2 cliques: Atendido | Esq: Editar | Dir: Excluir | Segurar: Mover</p>
 
-    <div class="tab-container">
-        <button class="tab-button active" onclick="openTab('medica')">Médica</button>
-        <button class="tab-button" onclick="openTab('vacinas')">Vacinas</button>
-        <button class="tab-button" onclick="openTab('enfermeira')">Enfermeira</button>
-        <button class="tab-button" onclick="openTab('psicologa')">Psicóloga</button>
-        <button class="tab-button" onclick="openTab('nutricionista')">Nutricionista</button>
-        <button class="tab-button" onclick="openTab('dentista')">Dentista</button>
-        <button class="tab-button" onclick="openTab('novo1')">Novo 1</button>
-        <button class="tab-button" onclick="openTab('novo2')">Novo 2</button>
-    </div>
-
-    <div id="medica" class="tab-content active">
-        <h2>Fila da Médica</h2>
-        <div class="input-section">
-            <label for="patientNameMedica">Nome do Paciente:</label>
-            <input type="text" id="patientNameMedica" placeholder="Nome do paciente">
-            <label for="priorityMedica">Prioridade:</label>
-            <select id="priorityMedica">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('medica')">Adicionar Paciente</button>
+    <div class="tab-container" id="tabs">
         </div>
-        <ul id="queueListMedica" class="queue-list"></ul>
-    </div>
 
-    <div id="vacinas" class="tab-content">
-        <h2>Fila de Vacinas</h2>
-        <div class="input-section">
-            <label for="patientNameVacinas">Nome do Paciente:</label>
-            <input type="text" id="patientNameVacinas" placeholder="Nome do paciente">
-            <label for="priorityVacinas">Prioridade:</label>
-            <select id="priorityVacinas">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('vacinas')">Adicionar Paciente</button>
+    <div id="queue-container">
         </div>
-        <ul id="queueListVacinas" class="queue-list"></ul>
-    </div>
-
-    <div id="enfermeira" class="tab-content">
-        <h2>Fila da Enfermeira</h2>
-        <div class="input-section">
-            <label for="patientNameEnfermeira">Nome do Paciente:</label>
-            <input type="text" id="patientNameEnfermeira" placeholder="Nome do paciente">
-            <label for="priorityEnfermeira">Prioridade:</label>
-            <select id="priorityEnfermeira">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('enfermeira')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListEnfermeira" class="queue-list"></ul>
-    </div>
-
-    <div id="psicologa" class="tab-content">
-        <h2>Fila da Psicóloga</h2>
-        <div class="input-section">
-            <label for="patientNamePsicologa">Nome do Paciente:</label>
-            <input type="text" id="patientNamePsicologa" placeholder="Nome do paciente">
-            <label for="priorityPsicologa">Prioridade:</label>
-            <select id="priorityPsicologa">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('psicologa')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListPsicologa" class="queue-list"></ul>
-    </div>
-
-    <div id="nutricionista" class="tab-content">
-        <h2>Fila da Nutricionista</h2>
-        <div class="input-section">
-            <label for="patientNameNutricionista">Nome do Paciente:</label>
-            <input type="text" id="patientNameNutricionista" placeholder="Nome do paciente">
-            <label for="priorityNutricionista">Prioridade:</label>
-            <select id="priorityNutricionista">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('nutricionista')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListNutricionista" class="queue-list"></ul>
-    </div>
-
-    <div id="dentista" class="tab-content">
-        <h2>Fila do Dentista</h2>
-        <div class="input-section">
-            <label for="patientNameDentista">Nome do Paciente:</label>
-            <input type="text" id="patientNameDentista" placeholder="Nome do paciente">
-            <label for="priorityDentista">Prioridade:</label>
-            <select id="priorityDentista">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('dentista')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListDentista" class="queue-list"></ul>
-    </div>
-
-    <div id="novo1" class="tab-content">
-        <h2>Fila Novo 1</h2>
-        <div class="input-section">
-            <label for="patientNameNovo1">Nome do Paciente:</label>
-            <input type="text" id="patientNameNovo1" placeholder="Nome do paciente">
-            <label for="priorityNovo1">Prioridade:</label>
-            <select id="priorityNovo1">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('novo1')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListNovo1" class="queue-list"></ul>
-    </div>
-
-    <div id="novo2" class="tab-content">
-        <h2>Fila Novo 2</h2>
-        <div class="input-section">
-            <label for="patientNameNovo2">Nome do Paciente:</label>
-            <input type="text" id="patientNameNovo2" placeholder="Nome do paciente">
-            <label for="priorityNovo2">Prioridade:</label>
-            <select id="priorityNovo2">
-                <option value="normal">Normal</option>
-                <option value="prioridade">Prioridade</option>
-            </select>
-            <button onclick="addPatient('novo2')">Adicionar Paciente</button>
-        </div>
-        <ul id="queueListNovo2" class="queue-list"></ul>
-    </div>
 
     <script>
-        // Objeto para armazenar os contadores de senhas para cada fila
-        const queueCounters = {
-            medica: { normal: 0, prioridade: 0 },
-            vacinas: { normal: 0, prioridade: 0 },
-            enfermeira: { normal: 0, prioridade: 0 },
-            psicologa: { normal: 0, prioridade: 0 },
-            nutricionista: { normal: 0, prioridade: 0 },
-            dentista: { normal: 0, prioridade: 0 },
-            novo1: { normal: 0, prioridade: 0 },
-            novo2: { normal: 0, prioridade: 0 }
-        };
+        const queues = ['medica', 'vacinas', 'enfermeira', 'psicologa', 'nutricionista', 'dentista', 'novo1', 'novo2'];
+        let currentActiveTab = 'medica';
+        const queueCounters = {};
+        queues.forEach(q => queueCounters[q] = { normal: 0, prioridade: 0 });
+
+        // Inicialização do DOM
+        function init() {
+            const tabsDiv = document.getElementById('tabs');
+            const container = document.getElementById('queue-container');
+
+            queues.forEach((q, index) => {
+                // Criar botões das abas
+                const btn = document.createElement('button');
+                btn.className = `tab-button ${index === 0 ? 'active' : ''}`;
+                btn.id = `btn-${q}`;
+                btn.innerText = q.charAt(0).toUpperCase() + q.slice(1);
+                btn.onclick = () => openTab(q);
+                tabsDiv.appendChild(btn);
+
+                // Criar áreas das filas
+                const content = document.createElement('div');
+                content.id = q;
+                content.className = `tab-content ${index === 0 ? 'active' : ''}`;
+                content.innerHTML = `
+                    <div class="input-section">
+                        <input type="text" id="input-${q}" placeholder="Nome do paciente">
+                        <select id="prio-${q}">
+                            <option value="normal">Normal</option>
+                            <option value="prioridade">Prioridade</option>
+                        </select>
+                        <button onclick="addPatient('${q}')">Adicionar Paciente</button>
+                    </div>
+                    <ul id="list-${q}" class="queue-list"></ul>
+                `;
+                container.appendChild(content);
+            });
+        }
+
+        function toggleMenu() {
+            document.getElementById('menuOptions').classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const body = document.documentElement;
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            toggleMenu();
+        }
 
         function openTab(tabName) {
-            var i, tabContent, tabButtons;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].classList.remove("active");
-            }
-            tabButtons = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tabButtons.length; i++) {
-                tabButtons[i].classList.remove("active");
-            }
-            document.getElementById(tabName).classList.add("active");
-            event.currentTarget.classList.add("active");
+            currentActiveTab = tabName;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById(`btn-${tabName}`).classList.add('active');
         }
 
         function addPatient(queueId) {
-            // Função para capitalizar a primeira letra de uma string
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
+            const input = document.getElementById(`input-${queueId}`);
+            const prio = document.getElementById(`prio-${queueId}`).value;
+            if (!input.value.trim()) return;
 
-            const patientNameInput = document.getElementById('patientName' + capitalizeFirstLetter(queueId));
-            const prioritySelect = document.getElementById('priority' + capitalizeFirstLetter(queueId));
-            const queueList = document.getElementById('queueList' + capitalizeFirstLetter(queueId));
+            queueCounters[queueId][prio]++;
+            const senha = `${queueCounters[queueId][prio]}${prio[0].toUpperCase()}`;
+            
+            const li = document.createElement('li');
+            li.className = `queue-item ${prio}`;
+            li.innerHTML = `<span data-senha="${senha}">${senha} - ${input.value}</span>`;
+            
+            // Adicionar Eventos de Gestos
+            setupGestures(li);
 
-            const patientName = patientNameInput.value.trim();
-            const priority = prioritySelect.value;
-
-            if (patientName === '') {
-                alert('Por favor, insira o nome do paciente.');
-                return;
-            }
-
-            let senha = '';
-            if (priority === 'normal') {
-                queueCounters[queueId].normal++;
-                senha = `${queueCounters[queueId].normal}N`;
-            } else { // prioridade
-                queueCounters[queueId].prioridade++;
-                senha = `${queueCounters[queueId].prioridade}P`;
-            }
-
-            const listItem = document.createElement('li');
-            listItem.classList.add('queue-item', priority);
-            listItem.setAttribute('data-priority-type', priority); // Adiciona um atributo para o tipo de prioridade
-
-            // O span que exibirá o nome e a senha
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = `${senha} - ${patientName}`;
-            nameSpan.setAttribute('data-senha', senha); // Armazena a senha para uso futuro
-            nameSpan.setAttribute('data-original-name', patientName); // Armazena o nome original
-
-            const actionsDiv = document.createElement('div');
-            actionsDiv.classList.add('actions');
-            actionsDiv.innerHTML = `
-                <button class="mark-attended" onclick="toggleAttended(this)">Atendido</button>
-                <button class="edit-patient" onclick="editPatient(this)">Editar</button>
-                <button class="move-up" onclick="movePatient(this, 'up')">⬆️</button>
-                <button class="move-down" onclick="movePatient(this, 'down')">⬇️</button>
-                <button class="delete-patient" onclick="deletePatient(this)">Excluir</button>
-            `;
-
-            listItem.appendChild(nameSpan);
-            listItem.appendChild(actionsDiv);
-            queueList.appendChild(listItem);
-
-            patientNameInput.value = ''; // Limpa o campo de nome
+            document.getElementById(`list-${queueId}`).appendChild(li);
+            input.value = '';
         }
 
-        function toggleAttended(button) {
-            const listItem = button.closest('.queue-item');
-            listItem.classList.toggle('atendido');
-            if (listItem.classList.contains('atendido')) {
-                button.textContent = 'Desfazer';
-                button.style.backgroundColor = '#ffc107'; // Cor de alerta
-                button.style.color = '#333';
-            } else {
-                button.textContent = 'Atendido';
-                button.style.backgroundColor = '#28a745'; // Cor original
-                button.style.color = 'white';
-            }
-        }
+        // LÓGICA DE GESTOS
+        function setupGestures(el) {
+            let startX = 0;
+            let lastTap = 0;
+            let pressTimer;
 
-        function movePatient(button, direction) {
-            const listItem = button.closest('.queue-item');
-            const parentList = listItem.parentNode;
-            const items = Array.from(parentList.children);
-            const index = items.indexOf(listItem);
+            // Arrastar e Mover (Drag and Drop Simples)
+            el.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                
+                // Segurar para mover
+                pressTimer = window.setTimeout(() => {
+                    el.classList.add('dragging');
+                }, 500);
+            });
 
-            if (direction === 'up' && index > 0) {
-                parentList.insertBefore(listItem, items[index - 1]);
-            } else if (direction === 'down' && index < items.length - 1) {
-                parentList.insertBefore(items[index + 1], listItem);
-            }
-        }
+            el.addEventListener('touchend', (e) => {
+                clearTimeout(pressTimer);
+                const endX = e.changedTouches[0].clientX;
+                const diff = endX - startX;
 
-        function deletePatient(button) {
-            const listItem = button.closest('.queue-item');
-            if (confirm('Tem certeza que deseja excluir este paciente da fila?')) {
-                listItem.remove();
-            }
-        }
+                // Reset Drag
+                if(el.classList.contains('dragging')) {
+                    el.classList.remove('dragging');
+                    return;
+                }
 
-        function editPatient(button) {
-            const listItem = button.closest('.queue-item');
-            const nameSpan = listItem.querySelector('span'); // Pega o span que contém o nome e a senha
-            const currentText = nameSpan.textContent;
-            const senha = nameSpan.getAttribute('data-senha'); // Pega a senha armazenada
-            const originalName = nameSpan.getAttribute('data-original-name'); // Pega o nome original
+                // Cuidado para não confundir scroll com gesto
+                if (Math.abs(diff) > 60) {
+                    if (diff < 0) editGesture(el); // Deslizar Esquerda
+                    if (diff > 60) deleteGesture(el); // Deslizar Direita
+                } else {
+                    // Clique Duplo
+                    const now = new Date().getTime();
+                    if (now - lastTap < 300) {
+                        el.classList.toggle('atendido');
+                    }
+                    lastTap = now;
+                }
+            });
 
-            // Cria um campo de input para edição
-            const inputField = document.createElement('input');
-            inputField.type = 'text';
-            inputField.classList.add('editable-name');
-            inputField.value = originalName; // Define o valor inicial como o nome do paciente
-            inputField.maxLength = 50; // Limita o tamanho do nome (opcional)
-
-            // Substitui o span pelo input
-            nameSpan.replaceWith(inputField);
-            inputField.focus(); // Coloca o foco no campo de input
-
-            // Altera o botão "Editar" para "Salvar"
-            button.textContent = 'Salvar';
-            button.onclick = function() { saveEditedPatient(this); }; // Altera a função do clique
-
-            // Opcional: Adiciona um listener para salvar ao pressionar Enter
-            inputField.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    saveEditedPatient(button);
+            el.addEventListener('touchmove', (e) => {
+                const diff = e.touches[0].clientX - startX;
+                
+                if(el.classList.contains('dragging')) {
+                    e.preventDefault();
+                    const list = el.parentNode;
+                    const draggingItem = el;
+                    const siblings = [...list.querySelectorAll('.queue-item:not(.dragging)')];
+                    let nextSibling = siblings.find(sibling => {
+                        return e.touches[0].clientY <= sibling.offsetTop + sibling.offsetHeight / 2;
+                    });
+                    list.insertBefore(draggingItem, nextSibling);
+                } else if (Math.abs(diff) > 10) {
+                    clearTimeout(pressTimer); // Cancela o "segurar" se estiver deslizando pros lados
                 }
             });
         }
 
-        function saveEditedPatient(button) {
-            const listItem = button.closest('.queue-item');
-            const inputField = listItem.querySelector('.editable-name');
-            const newName = inputField.value.trim();
+        function editGesture(el) {
+            if (el.classList.contains('atendido')) return;
+            const span = el.querySelector('span');
+            const currentText = span.innerText.split(' - ')[1];
+            const senha = span.getAttribute('data-senha');
+            
+            const input = document.createElement('input');
+            input.className = 'editable-name';
+            input.value = currentText;
+            span.replaceWith(input);
+            input.focus();
 
-            if (newName === '') {
-                alert('O nome do paciente não pode ficar vazio.');
-                inputField.focus();
-                return;
-            }
-
-            const senha = listItem.querySelector('span') ? listItem.querySelector('span').getAttribute('data-senha') : ''; // Pega a senha se o span ainda existir
-            const newNameSpan = document.createElement('span');
-            newNameSpan.textContent = `${senha} - ${newName}`;
-            newNameSpan.setAttribute('data-senha', senha);
-            newNameSpan.setAttribute('data-original-name', newName); // Atualiza o nome original
-
-            // Substitui o input de volta para um span
-            inputField.replaceWith(newNameSpan);
-
-            // Restaura o botão "Salvar" para "Editar"
-            button.textContent = 'Editar';
-            button.onclick = function() { editPatient(this); }; // Restaura a função do clique
+            input.onblur = () => {
+                const newSpan = document.createElement('span');
+                newSpan.setAttribute('data-senha', senha);
+                newSpan.innerText = `${senha} - ${input.value || currentText}`;
+                input.replaceWith(newSpan);
+            };
+            input.onkeydown = (e) => { if(e.key === 'Enter') input.blur(); };
         }
 
-        // Abrir a primeira aba por padrão ao carregar a página
-        document.addEventListener('DOMContentLoaded', (event) => {
-            openTab('medica');
-        });
+        function deleteGesture(el) {
+            el.style.transform = 'translateX(100%)';
+            el.style.opacity = '0';
+            setTimeout(() => {
+                if(confirm("Excluir paciente?")) el.remove();
+                else {
+                    el.style.transform = 'translateX(0)';
+                    el.style.opacity = '1';
+                }
+            }, 300);
+        }
+
+        // Funções de Limpeza (No Menu)
+        function clearCurrentQueue() {
+            if (confirm(`Zerar fila de ${currentActiveTab.toUpperCase()}?`)) {
+                queueCounters[currentActiveTab] = { normal: 0, prioridade: 0 };
+                document.getElementById(`list-${currentActiveTab}`).innerHTML = '';
+                toggleMenu();
+            }
+        }
+
+        function clearAllQueues() {
+            if (confirm("ATENÇÃO: Deseja zerar TODAS as filas?")) {
+                queues.forEach(q => {
+                    queueCounters[q] = { normal: 0, prioridade: 0 };
+                    document.getElementById(`list-${q}`).innerHTML = '';
+                });
+                toggleMenu();
+            }
+        }
+
+        window.onclick = (e) => {
+            if (!e.target.matches('.main-menu-btn')) document.getElementById('menuOptions').classList.remove('active');
+        };
+
+        // Init Theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        init();
     </script>
 </body>
 </html>
