@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor Mobile PDF</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* CSS Unificado */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        /* Botão de Upload Customizado */
+        .upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #eef2ff;
+            color: #4f46e5;
+            border: 2px dashed #4f46e5;
+            padding: 30px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .upload-label:active {
+            background: #e0e7ff;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Preview da Imagem */
+        #preview-container {
+            width: 100%;
+            margin-bottom: 20px;
+            display: none; /* Escondido até ter imagem */
+        }
+
+        #preview {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        /* Botão de Ação */
+        .btn-convert {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background-color: #10b981;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .btn-convert:disabled {
+            background-color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .btn-convert:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Imagem para PDF</h2>
+        
+        <label for="imageInput" class="upload-label">
+            <span style="font-size: 30px;">📷</span>
+            <span>Tocar para selecionar imagem</span>
+        </label>
+        <input type="file" id="imageInput" accept="image/*">
+
+        <div id="preview-container">
+            <p style="font-size: 12px; color: #666;">Prévia:</p>
+            <img id="preview" src="" alt="Preview">
+        </div>
+
+        <button id="convertBtn" class="btn-convert" disabled>Gerar PDF agora</button>
+    </div>
+
+    <script>
+        // JavaScript Unificado
+        const { jsPDF } = window.jspdf;
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('preview-container');
+        const preview = document.getElementById('preview');
+        const convertBtn = document.getElementById('convertBtn');
+
+        let imageData = null;
+
+        // Ao selecionar o arquivo
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                    previewContainer.style.display = 'block';
+                    imageData = event.target.result;
+                    convertBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Ao clicar no botão de converter
+        convertBtn.addEventListener('click', () => {
+            if (!imageData) return;
+
+            // Cria o documento PDF
+            const pdf = new jsPDF();
+            
+            // Calcula dimensões para manter proporção (opcional)
+            // Aqui adicionamos a imagem de forma simples
+            pdf.addImage(imageData, 'JPEG', 10, 10, 190, 0); // O '0' calcula a altura proporcional
+            
+            // Baixa o arquivo
+            pdf.save("meu-arquivo.pdf");
+        });
+    </script>
+</body>
+</html>
