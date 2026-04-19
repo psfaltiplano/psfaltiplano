@@ -1,1 +1,453 @@
-a
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gestão de Filas - Setas</title>
+    <style>
+        :root {
+            --bg-body: #f4f4f4;
+            --bg-card: #ffffff;
+            --text-main: #333333;
+            --border-color: #dddddd;
+            --tab-inactive: #eeeeee;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --primary: #007bff;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --border-color: #333333;
+            --tab-inactive: #2c2c2c;
+        }
+
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; touch-action: pan-y; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 100px;
+            overflow-x: hidden;
+        }
+
+        h1 { text-align: center; font-size: 1.2rem; margin-bottom: 10px; opacity: 0.7; }
+
+        /* Menu de Funcionalidades Flutuante */
+        .menu-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .main-menu-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-size: 24px;
+        }
+
+        .menu-options {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+            width: 220px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .menu-options.active { display: block; }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            background: rgba(150,150,150,0.1);
+        }
+
+        .menu-item.danger { color: var(--danger); background: rgba(220, 53, 69, 0.1); }
+
+        /* Abas */
+        .tab-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            background-color: var(--tab-inactive);
+            border: none;
+            padding: 10px 2px;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .tab-button.active { background-color: var(--primary); color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: var(--bg-card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .input-section input, .input-section select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 16px;
+        }
+
+        .input-section button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* Lista */
+        .queue-list { list-style: none; padding: 0; min-height: 100px; }
+
+        .queue-item {
+            background-color: var(--bg-card);
+            margin-bottom: 10px;
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 6px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .queue-item.prioridade { border-left-color: var(--danger); }
+        .queue-item.normal { border-left-color: #28a745; }
+        .queue-item.atendido { opacity: 0.3; text-decoration: line-through; border-left-color: #999; }
+
+        .queue-item span { font-size: 1.1rem; font-weight: bold; flex-grow: 1; }
+
+        /* Controles de Ordenação */
+        .order-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-left: 15px;
+        }
+
+        .order-btn {
+            background: var(--tab-inactive);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+
+        .editable-name {
+            width: 80%;
+            padding: 5px;
+            font-size: 1.1rem;
+            background: transparent;
+            color: inherit;
+            border: 1px solid var(--primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+        <button class="main-menu-btn" onclick="toggleMenu()">⚙️</button>
+        <div class="menu-options" id="menuOptions">
+            <div class="menu-item" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>&nbsp; Trocar Tema
+            </div>
+            <div class="menu-item" onclick="clearCurrentQueue()">
+                <span>🧹</span>&nbsp; Limpar Fila Atual
+            </div>
+            <div class="menu-item danger" onclick="clearAllQueues()">
+                <span>⚠️</span>&nbsp; Limpar Tudo
+            </div>
+        </div>
+    </div>
+
+    <h1>Gestão de Filas</h1>
+    <p class="hint">2 cliques: Atendido | Esq: Editar | Dir: Excluir | Setas: Mover</p>
+
+    <div class="tab-container" id="tabs"></div>
+
+    <div id="queue-container"></div>
+
+    <script>
+const queues = ['medica', 'vacinas', 'enfermeira', 'psicologa', 'nutricionista', 'dentista', 'novo1', 'novo2'];
+let currentActiveTab = 'medica';
+let queueCounters = {};
+queues.forEach(q => queueCounters[q] = { normal: 0, prioridade: 0 });
+
+// --- FUNÇÕES DE PERSISTÊNCIA (O que foi adicionado) ---
+function saveToLocalStorage() {
+    const data = {};
+    queues.forEach(q => {
+        const list = document.getElementById(`list-${q}`);
+        data[q] = {
+            html: list.innerHTML,
+            counters: queueCounters[q]
+        };
+    });
+    localStorage.setItem('queue_data', JSON.stringify(data));
+}
+
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('queue_data');
+    if (saved) {
+        const data = JSON.parse(saved);
+        queues.forEach(q => {
+            if (data[q]) {
+                const list = document.getElementById(`list-${q}`);
+                list.innerHTML = data[q].html;
+                queueCounters[q] = data[q].counters;
+                
+                // Reatribui os gestos aos itens que foram carregados do texto
+                const items = list.querySelectorAll('.queue-item');
+                items.forEach(li => setupGestures(li));
+            }
+        });
+    }
+}
+// -------------------------------------------------------
+
+function init() {
+    const tabsDiv = document.getElementById('tabs');
+    const container = document.getElementById('queue-container');
+
+    queues.forEach((q, index) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-button ${index === 0 ? 'active' : ''}`;
+        btn.id = `btn-${q}`;
+        btn.innerText = q.charAt(0).toUpperCase() + q.slice(1);
+        btn.onclick = () => openTab(q);
+        tabsDiv.appendChild(btn);
+
+        const content = document.createElement('div');
+        content.id = q;
+        content.className = `tab-content ${index === 0 ? 'active' : ''}`;
+        content.innerHTML = `
+            <div class="input-section">
+                <input type="text" id="input-${q}" placeholder="Nome do paciente">
+                <select id="prio-${q}">
+                    <option value="normal">Normal</option>
+                    <option value="prioridade">Prioridade</option>
+                </select>
+                <button onclick="addPatient('${q}')">Adicionar Paciente</button>
+            </div>
+            <ul id="list-${q}" class="queue-list"></ul>
+        `;
+        container.appendChild(content);
+    });
+
+    // Carrega os dados salvos logo após criar a estrutura
+    loadFromLocalStorage();
+}
+
+function toggleMenu() {
+    document.getElementById('menuOptions').classList.toggle('active');
+}
+
+function toggleTheme() {
+    const body = document.documentElement;
+    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    toggleMenu();
+}
+
+function openTab(tabName) {
+    currentActiveTab = tabName;
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    document.getElementById(`btn-${tabName}`).classList.add('active');
+}
+
+function addPatient(queueId) {
+    const input = document.getElementById(`input-${queueId}`);
+    const prio = document.getElementById(`prio-${queueId}`).value;
+    if (!input.value.trim()) return;
+
+    queueCounters[queueId][prio]++;
+    const senha = `${queueCounters[queueId][prio]}${prio[0].toUpperCase()}`;
+    
+    const li = document.createElement('li');
+    li.className = `queue-item ${prio}`;
+    li.innerHTML = `
+        <span data-senha="${senha}">${senha} - ${input.value}</span>
+        <div class="order-controls">
+            <button class="order-btn" onclick="moveUp(this.parentElement.parentElement)">▲</button>
+            <button class="order-btn" onclick="moveDown(this.parentElement.parentElement)">▼</button>
+        </div>
+    `;
+    
+    setupGestures(li);
+    document.getElementById(`list-${queueId}`).prepend(li);
+    input.value = '';
+    saveToLocalStorage(); // Salva após adicionar
+}
+
+function moveUp(el) {
+    const prev = el.previousElementSibling;
+    if (prev) {
+        el.parentNode.insertBefore(el, prev);
+        saveToLocalStorage(); // Salva após mover
+    }
+}
+
+function moveDown(el) {
+    const next = el.nextElementSibling;
+    if (next) {
+        el.parentNode.insertBefore(next, el);
+        saveToLocalStorage(); // Salva após mover
+    }
+}
+
+function setupGestures(el) {
+    let startX = 0;
+    let lastTap = 0;
+
+    el.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    }, {passive: true});
+
+    el.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const diff = endX - startX;
+
+        if (Math.abs(diff) > 60) {
+            if (diff < 0) editGesture(el); 
+            if (diff > 60) deleteGesture(el); 
+        } else {
+            const now = new Date().getTime();
+            if (now - lastTap < 300) {
+                el.classList.toggle('atendido');
+                saveToLocalStorage(); // Salva o estado "atendido"
+            }
+            lastTap = now;
+        }
+    });
+}
+
+function editGesture(el) {
+    if (el.classList.contains('atendido')) return;
+    const span = el.querySelector('span');
+    if (!span) return;
+    const currentText = span.innerText.split(' - ')[1];
+    const senha = span.getAttribute('data-senha');
+    
+    const input = document.createElement('input');
+    input.className = 'editable-name';
+    input.value = currentText;
+    span.replaceWith(input);
+    input.focus();
+
+    input.onblur = () => {
+        const newSpan = document.createElement('span');
+        newSpan.setAttribute('data-senha', senha);
+        newSpan.innerText = `${senha} - ${input.value || currentText}`;
+        input.replaceWith(newSpan);
+        saveToLocalStorage(); // Salva após editar o nome
+    };
+    input.onkeydown = (e) => { if(e.key === 'Enter') input.blur(); };
+}
+
+function deleteGesture(el) {
+    el.style.transform = 'translateX(100%)';
+    el.style.opacity = '0';
+    setTimeout(() => {
+        if(confirm("Excluir paciente?")) {
+            el.remove();
+            saveToLocalStorage(); // Salva após deletar
+        } else {
+            el.style.transform = 'translateX(0)';
+            el.style.opacity = '1';
+        }
+    }, 300);
+}
+
+function clearCurrentQueue() {
+    if (confirm(`Zerar fila de ${currentActiveTab.toUpperCase()}?`)) {
+        queueCounters[currentActiveTab] = { normal: 0, prioridade: 0 };
+        document.getElementById(`list-${currentActiveTab}`).innerHTML = '';
+        saveToLocalStorage();
+        toggleMenu();
+    }
+}
+
+function clearAllQueues() {
+    if (confirm("ATENÇÃO: Deseja zerar TODAS as filas?")) {
+        queues.forEach(q => {
+            queueCounters[q] = { normal: 0, prioridade: 0 };
+            document.getElementById(`list-${q}`).innerHTML = '';
+        });
+        saveToLocalStorage();
+        toggleMenu();
+    }
+}
+
+window.onclick = (e) => {
+    if (!e.target.matches('.main-menu-btn')) document.getElementById('menuOptions').classList.remove('active');
+};
+
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+init();
+
+    </script>
+</body>
+</html>
