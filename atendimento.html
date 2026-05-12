@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Gestão de Filas - Setas</title>
+    <title>Gestão de Filas - Modal</title>
     <style>
         :root {
             --bg-body: #f4f4f4;
@@ -13,7 +13,9 @@
             --tab-inactive: #eeeeee;
             --danger: #dc3545;
             --warning: #ffc107;
+            --success: #28a745;
             --primary: #007bff;
+            --overlay: rgba(0,0,0,0.5);
         }
 
         [data-theme="dark"] {
@@ -22,6 +24,7 @@
             --text-main: #e0e0e0;
             --border-color: #333333;
             --tab-inactive: #2c2c2c;
+            --overlay: rgba(0,0,0,0.8);
         }
 
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
@@ -38,13 +41,8 @@
 
         h1 { text-align: center; font-size: 1.2rem; margin-bottom: 10px; opacity: 0.7; }
 
-        .menu-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
+        /* Menu de Configurações */
+        .menu-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
         .main-menu-btn {
             background: var(--primary);
             color: white;
@@ -56,7 +54,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             font-size: 24px;
         }
-
         .menu-options {
             display: none;
             position: absolute;
@@ -69,9 +66,7 @@
             width: 220px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
-
         .menu-options.active { display: block; }
-
         .menu-item {
             display: flex;
             align-items: center;
@@ -82,16 +77,15 @@
             margin-bottom: 5px;
             background: rgba(150,150,150,0.1);
         }
-
         .menu-item.danger { color: var(--danger); background: rgba(220, 53, 69, 0.1); }
 
+        /* Tabs */
         .tab-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
             gap: 5px;
             margin-bottom: 20px;
         }
-
         .tab-button {
             background-color: var(--tab-inactive);
             border: none;
@@ -102,12 +96,11 @@
             color: var(--text-main);
             font-weight: bold;
         }
-
         .tab-button.active { background-color: var(--primary); color: white; }
-
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Inputs */
         .input-section {
             margin-bottom: 20px;
             padding: 15px;
@@ -115,7 +108,6 @@
             background-color: var(--bg-card);
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
         .input-section input, .input-section select {
             width: 100%;
             padding: 12px;
@@ -126,7 +118,6 @@
             color: var(--text-main);
             font-size: 16px;
         }
-
         .input-section button {
             width: 100%;
             background-color: var(--primary);
@@ -138,8 +129,8 @@
             cursor: pointer;
         }
 
+        /* Lista */
         .queue-list { list-style: none; padding: 0; min-height: 100px; }
-
         .queue-item {
             background-color: var(--bg-card);
             margin-bottom: 10px;
@@ -150,63 +141,85 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
         }
-
         .queue-item.prioridade { border-left-color: var(--danger); }
-        .queue-item.normal { border-left-color: #28a745; }
+        .queue-item.normal { border-left-color: var(--success); }
         .queue-item.atendido { opacity: 0.4; text-decoration: line-through; filter: grayscale(1); }
+        
+        .patient-info { flex-grow: 1; cursor: pointer; padding-right: 10px; }
+        .patient-info span { font-size: 1.1rem; font-weight: bold; }
 
-        .queue-item span { font-size: 1.1rem; font-weight: bold; flex-grow: 1; }
-
-        .actions-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .order-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .btn-action {
+        .order-controls { display: flex; flex-direction: column; gap: 4px; }
+        .btn-order {
             background: var(--tab-inactive);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 8px;
             cursor: pointer;
-            font-size: 14px;
             color: var(--text-main);
-            display: flex;
-            align-items: center;
+        }
+
+        /* MODAL / CAIXA DE DIÁLOGO */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay);
+            z-index: 2000;
             justify-content: center;
+            align-items: center;
         }
-
-        .btn-delete { color: var(--danger); }
-
-        .hint {
-            font-size: 0.75rem;
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            width: 90%;
+            max-width: 350px;
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
-            margin-bottom: 10px;
-            opacity: 0.6;
-            line-height: 1.4;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .modal-box h3 { margin-top: 0; font-size: 1.1rem; }
+        .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .modal-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-atender { background-color: var(--success); }
+        .btn-editar { background-color: var(--warning); color: #000; }
+        .btn-apagar { background-color: var(--danger); }
+        .btn-cancelar { background-color: var(--tab-inactive); color: var(--text-main); }
 
         .editable-name {
             width: 100%;
-            padding: 8px;
-            font-size: 1.1rem;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
             background: var(--bg-body);
             color: var(--text-main);
-            border: 2px solid var(--primary);
-            border-radius: 5px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
+
+    <!-- Modal de Ações -->
+    <div class="modal-overlay" id="modalAction">
+        <div class="modal-box">
+            <h3 id="modalTitle">Paciente</h3>
+            <div class="modal-actions">
+                <button class="modal-btn btn-atender" onclick="actionAtendido()">✅ ATENDIDO</button>
+                <button class="modal-btn btn-editar" onclick="actionEditar()">✏️ EDITAR</button>
+                <button class="modal-btn btn-apagar" onclick="actionApagar()">🗑️ APAGAR</button>
+                <button class="modal-btn btn-cancelar" onclick="closeModal()">CANCELAR</button>
+            </div>
+        </div>
+    </div>
 
     <div class="menu-container">
         <button class="main-menu-btn" onclick="toggleMenu()">⚙️</button>
@@ -224,10 +237,6 @@
     </div>
 
     <h1>Gestão de Filas</h1>
-    <p class="hint">
-        <b>Mouse:</b> 2 cliques (Atendido) | Botão Direito (Excluir)<br>
-        <b>Celular:</b> Arrastar não é mais necessário. Use os botões e 2 cliques.
-    </p>
 
     <div class="tab-container" id="tabs"></div>
     <div id="queue-container"></div>
@@ -236,6 +245,8 @@
 const queues = ['medica', 'vacinas', 'enfermeira', 'psicologa', 'nutricionista', 'dentista', 'novo1', 'novo2'];
 let currentActiveTab = 'medica';
 let queueCounters = {};
+let selectedItem = null; // Armazena o item selecionado para o modal
+
 queues.forEach(q => queueCounters[q] = { normal: 0, prioridade: 0 });
 
 const scriptURL = "https://script.google.com/macros/s/AKfycbx7EZWyBXv5o-FjQ6ufq5DKNayATcBFMDz6540oBuzxwg0M-HCuGP_hZYGzHeg_iHRH/exec";
@@ -277,8 +288,6 @@ function renderData(data) {
             const list = document.getElementById(`list-${q}`);
             list.innerHTML = data[q].html;
             queueCounters[q] = data[q].counters;
-            // Reatribui eventos aos botões carregados
-            list.querySelectorAll('.queue-item').forEach(li => attachEvents(li));
         }
     });
 }
@@ -344,47 +353,59 @@ function addPatient(queueId) {
     const li = document.createElement('li');
     li.className = `queue-item ${prio}`;
     li.innerHTML = `
-        <span data-senha="${senha}">${senha} - ${input.value}</span>
-        <div class="actions-group">
-            <button class="btn-action" title="Editar" onclick="editItem(this.closest('.queue-item'))">✏️</button>
-            <button class="btn-action btn-delete" title="Excluir" onclick="deleteItem(this.closest('.queue-item'))">🗑️</button>
-            <div class="order-controls">
-                <button class="btn-action" onclick="moveUp(this.closest('.queue-item'))">▲</button>
-                <button class="btn-action" onclick="moveDown(this.closest('.queue-item'))">▼</button>
-            </div>
+        <div class="patient-info" onclick="openModal(this.closest('.queue-item'))">
+            <span data-senha="${senha}">${senha} - ${input.value}</span>
+        </div>
+        <div class="order-controls">
+            <button class="btn-order" onclick="moveUp(this.closest('.queue-item'))">▲</button>
+            <button class="btn-order" onclick="moveDown(this.closest('.queue-item'))">▼</button>
         </div>
     `;
     
-    attachEvents(li);
     document.getElementById(`list-${queueId}`).prepend(li);
     input.value = '';
     saveToLocalStorage();
 }
 
-// Unifica os eventos de clique e toque
-function attachEvents(el) {
-    // Clique duplo para marcar como atendido (Funciona em PC e Celular)
-    el.addEventListener('dblclick', (e) => {
-        if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
-            el.classList.toggle('atendido');
-            saveToLocalStorage();
-        }
-    });
-
-    // Botão direito para excluir (Funciona em PC)
-    el.oncontextmenu = (e) => {
-        e.preventDefault();
-        deleteItem(el);
-    };
+/* FUNÇÕES DO MODAL */
+function openModal(el) {
+    selectedItem = el;
+    const name = el.querySelector('span').innerText;
+    document.getElementById('modalTitle').innerText = name;
+    document.getElementById('modalAction').classList.add('active');
 }
 
-function editItem(el) {
-    if (el.classList.contains('atendido')) return;
+function closeModal() {
+    document.getElementById('modalAction').classList.remove('active');
+    selectedItem = null;
+}
+
+function actionAtendido() {
+    if (selectedItem) {
+        selectedItem.classList.toggle('atendido');
+        saveToLocalStorage();
+        closeModal();
+    }
+}
+
+function actionApagar() {
+    if (selectedItem && confirm("Deseja excluir este paciente?")) {
+        selectedItem.remove();
+        saveToLocalStorage();
+        closeModal();
+    }
+}
+
+function actionEditar() {
+    if (!selectedItem) return;
+    const el = selectedItem;
     const span = el.querySelector('span');
-    const currentFullText = span.innerText;
+    const currentText = span.innerText;
     const senha = span.getAttribute('data-senha');
-    const nameOnly = currentFullText.split(' - ')[1];
+    const nameOnly = currentText.split(' - ')[1];
     
+    closeModal(); // Fecha o modal para focar no input
+
     const input = document.createElement('input');
     input.className = 'editable-name';
     input.value = nameOnly;
@@ -403,16 +424,7 @@ function editItem(el) {
     input.onkeydown = (e) => { if(e.key === 'Enter') finishEdit(); };
 }
 
-function deleteItem(el) {
-    if(confirm("Deseja excluir este paciente?")) {
-        el.style.opacity = '0';
-        setTimeout(() => {
-            el.remove();
-            saveToLocalStorage();
-        }, 200);
-    }
-}
-
+/* MOVIMENTAÇÃO (SETAS) */
 function moveUp(el) {
     const prev = el.previousElementSibling;
     if (prev) {
@@ -429,6 +441,7 @@ function moveDown(el) {
     }
 }
 
+/* GERAL */
 function clearCurrentQueue() {
     if (confirm(`Zerar fila de ${currentActiveTab.toUpperCase()}?`)) {
         queueCounters[currentActiveTab] = { normal: 0, prioridade: 0 };
@@ -450,7 +463,13 @@ function clearAllQueues() {
 }
 
 window.onclick = (e) => {
-    if (!e.target.matches('.main-menu-btn')) document.getElementById('menuOptions').classList.remove('active');
+    if (!e.target.matches('.main-menu-btn')) {
+        document.getElementById('menuOptions').classList.remove('active');
+    }
+    // Fecha modal se clicar fora da caixa branca
+    if (e.target.classList.contains('modal-overlay')) {
+        closeModal();
+    }
 };
 
 const savedTheme = localStorage.getItem('theme') || 'light';
