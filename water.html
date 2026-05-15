@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routine Tracker</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent-water: #38bdf8;
+            --accent-teeth: #fbbf24;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .dashboard {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 260px;
+            transition: transform 0.3s ease;
+        }
+
+        .icon-btn {
+            font-size: 70px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Unique Glows */
+        #waterBtn:hover { filter: drop-shadow(0 0 15px var(--accent-water)); }
+        #brushBtn:hover { filter: drop-shadow(0 0 15px var(--accent-teeth)); }
+
+        .icon-btn:active { transform: scale(0.95); }
+
+        .log-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #334155;
+            padding-top: 1.5rem;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            margin-bottom: 0.2rem;
+        }
+
+        .time-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Color Coding */
+        .water-text { color: var(--accent-water); }
+        .teeth-text { color: var(--accent-teeth); }
+
+        .hidden { display: none; }
+        
+        h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- Water Container -->
+    <div class="container">
+        <h2>HYDRATION</h2>
+        <button class="icon-btn" id="waterBtn">💧</button>
+        <div id="waterLog" class="log-section hidden">
+            <div>
+                <div class="label">Last Drink</div>
+                <div id="waterLast" class="time-value water-text">--:--</div>
+            </div>
+            <div>
+                <div class="label">Next Drink</div>
+                <div id="waterNext" class="time-value water-text">--:--</div>
+            </div>
+        </div>
+        <div id="waterEmpty" class="label">Tap to start</div>
+    </div>
+
+    <!-- Toothbrush Container -->
+    <div class="container">
+        <h2>HYGIENE</h2>
+        <button class="icon-btn" id="brushBtn">🪥</button>
+        <div id="brushLog" class="log-section hidden">
+            <div>
+                <div class="label">Last Brush</div>
+                <div id="brushLast" class="time-value teeth-text">--:--</div>
+            </div>
+            <div>
+                <div class="label">Next Brush</div>
+                <div id="brushNext" class="time-value teeth-text">--:--</div>
+            </div>
+        </div>
+        <div id="brushEmpty" class="label">Tap to start</div>
+    </div>
+</div>
+
+<script>
+    function formatTime(date) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function setupTracker(btnId, lastId, nextId, logId, emptyId, storageKey) {
+        const btn = document.getElementById(btnId);
+        const lastDisp = document.getElementById(lastId);
+        const nextDisp = document.getElementById(nextId);
+        const logSec = document.getElementById(logId);
+        const emptyState = document.getElementById(emptyId);
+
+        function refresh(timestamp) {
+            if (!timestamp) return;
+            const lastDate = new Date(parseInt(timestamp));
+            const nextDate = new Date(lastDate.getTime() + (60 * 60 * 1000));
+
+            lastDisp.innerText = formatTime(lastDate);
+            nextDisp.innerText = formatTime(nextDate);
+            
+            logSec.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+        }
+
+        btn.addEventListener('click', () => {
+            const now = Date.now().toString();
+            localStorage.setItem(storageKey, now);
+            refresh(now);
+        });
+
+        // Load existing data
+        const saved = localStorage.getItem(storageKey);
+        if (saved) refresh(saved);
+    }
+
+    // Initialize both trackers
+    setupTracker('waterBtn', 'waterLast', 'waterNext', 'waterLog', 'waterEmpty', 'lastWaterTime');
+    setupTracker('brushBtn', 'brushLast', 'brushNext', 'brushLog', 'brushEmpty', 'lastBrushTime');
+</script>
+
+</body>
+</html>
