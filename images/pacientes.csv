@@ -1,33 +1,33 @@
-"paciente","numero","arquivo","observacao"
-"Francisca Sandra Bezerra de Oliveira ACS Patricia","815.883.483-34","PTT-20260811-WA0031.mp3",""
-"Francisca Sandra Bezerra de Oliveira ACS Patricia","815.883.483-34","AUD-20260811-WA0032.mp3",""
-"Josefa Ferreira Monte Gomes ACS Dora","834.296.543-00","IMG-20260811-WA0007.jpg",""
-"Josefa Ferreira Monte Gomes ACS Dora","834.296.543-00","IMG-20260811-WA0004.jpg",""
-"Josefa Ferreira Monte Gomes ACS Dora","834.296.543-00","IMG-20260811-WA0005.jpg",""
-"Ingrid Thaiane Ferreira Delfino Dias ACS Mateus","047.808.613-06","20260811_121610.jpg",""
-"Manoel Jose de Santana ACS Mateus","790.074.573-49","20260811_121603.jpg",""
-"Nubia Maria Brauna Pereira ACS Patricia","642.512.413-04","20260811_122931.jpg",""
-"Lucia Bezerra de Sousa ACS Aline?","730.893.893-04","20260811_131745.jpg","Pediu para transcrever estes pedidos e a receita para a folha do PSF porque Danilo não marca com esse papel."
-"Lucia Bezerra de Sousa ACS Aline?","730.893.893-04","20260811_131755.jpg",""
-"Lucia Bezerra de Sousa ACS Aline?","730.893.893-04","20260811_131819.jpg",""
-"Tallyta Fernandes de Oliveira Alves ACS Mateus","023.803.173-05","","Paciente com crise de ansiedade precisa passar na consulta primeiro ou encaminha para Welivania? ela sente dor e pediu urgencia"
-"Tallyta Fernandes de Oliveira Alves ACS Mateus","023.803.173-05","","(crise de ansiedade dor de cabeça nuca e cabeça inchaço pés e mãos)"
-"Tallyta Fernandes de Oliveira Alves ACS Mateus","023.803.173-05","","Passou na UPA ontem e foi encaminhada para acompanhamento no psf"
-"Maria Eline Pereira de Souza ACS Dora?","062.935.273-99","20260811_140311.jpg",""
-"Joara Veronica Barbosa","703008867186476","20260811_140305.jpg",""
-"Joara Veronica Barbosa","703008867186476","20260811_140258.jpg",""
-"Balbina Vieira da Silva","638.038.953-91","20260811_153126.jpg",""
-"Elizabete de Freitas Monteiro ACS Helena","700004630261405","20260811_153600.jpg",""
-"Aurineide Alves de Souza Oliveira ACS","195.953.523-49","20260811_154621.jpg",""
-"Aurineide Alves de Souza Oliveira ACS","195.953.523-49","20260811_153906.jpg",""
-"Andresa Layana Alves de Oliveira ACS","207224383750018","20260811_154006.jpg",""
-"Carlos de Souza Oliveira","708301769211060","20260811_155323.jpg",""
-"Carlos de Souza Oliveira","708301769211060","20260811_155314.jpg",""
-"Regia Maria Ferreira de Araujo ACS Altiplano","820.663.293-04","","Diazepam 10 mg 1x à noite"
-"Regia Maria Ferreira de Araujo ACS Altiplano","820.663.293-04","20260811_162912.jpg",""
-"Francisca Ferreira de Sousa","704208258348189","20260811_163324.jpg",""
-"Valdete Ferreira de Sousa","053.238.933-62","20260811_163315.jpg",""
-"Norberto Freire Viana","767.221.393-87","20260811_163259.jpg",""
-"Francisca Alves Leandro ACS Dora","885.407.153-68","","Diazepam 10 Mg 3 caixas"
-"Aline de Almeida Ferreira","814.274.253-53","20260812_093000.jpg",""
-"Aline de Almeida Ferreira","814.274.253-53","20260812_093840.mp3",""
+paciente,numero,arquivo,observacao
+Francisca Sandra Bezerra de Oliveira ACS Patricia,815.883.483-34,PTT-20260811-WA0031.mp3,
+Francisca Sandra Bezerra de Oliveira ACS Patricia,815.883.483-34,AUD-20260811-WA0032.mp3,
+Josefa Ferreira Monte Gomes ACS Dora,834.296.543-00,IMG-20260811-WA0007.jpg,
+Josefa Ferreira Monte Gomes ACS Dora,834.296.543-00,IMG-20260811-WA0004.jpg,
+Josefa Ferreira Monte Gomes ACS Dora,834.296.543-00,IMG-20260811-WA0005.jpg,
+Ingrid Thaiane Ferreira Delfino Dias ACS Mateus,047.808.613-06,20260811_121610.jpg,
+Manoel Jose de Santana ACS Mateus,790.074.573-49,20260811_121603.jpg,
+Nubia Maria Brauna Pereira ACS Patricia,642.512.413-04,20260811_122931.jpg,
+Lucia Bezerra de Sousa ACS Aline?,730.893.893-04,20260811_131745.jpg,Pediu para transcrever estes pedidos e a receita para a folha do PSF porque Danilo não marca com esse papel.
+Lucia Bezerra de Sousa ACS Aline?,730.893.893-04,20260811_131755.jpg,
+Lucia Bezerra de Sousa ACS Aline?,730.893.893-04,20260811_131819.jpg,
+Tallyta Fernandes de Oliveira Alves ACS Mateus,023.803.173-05,,Paciente com crise de ansiedade precisa passar na consulta primeiro ou encaminha para Welivania? ela sente dor e pediu urgencia
+Tallyta Fernandes de Oliveira Alves ACS Mateus,023.803.173-05,,(crise de ansiedade dor de cabeça nuca e cabeça inchaço pés e mãos)
+Tallyta Fernandes de Oliveira Alves ACS Mateus,023.803.173-05,,Passou na UPA ontem e foi encaminhada para acompanhamento no psf
+Maria Eline Pereira de Souza ACS Dora?,062.935.273-99,20260811_140311.jpg,
+Joara Veronica Barbosa,703008867186476,20260811_140305.jpg,
+Joara Veronica Barbosa,703008867186476,20260811_140258.jpg,
+Balbina Vieira da Silva,638.038.953-91,20260811_153126.jpg,
+Elizabete de Freitas Monteiro ACS Helena,700004630261405,20260811_153600.jpg,
+Aurineide Alves de Souza Oliveira ACS,195.953.523-49,20260811_154621.jpg,
+Aurineide Alves de Souza Oliveira ACS,195.953.523-49,20260811_153906.jpg,
+Andresa Layana Alves de Oliveira ACS,207224383750018,20260811_154006.jpg,
+Carlos de Souza Oliveira,708301769211060,20260811_155323.jpg,
+Carlos de Souza Oliveira,708301769211060,20260811_155314.jpg,
+Regia Maria Ferreira de Araujo ACS Altiplano,820.663.293-04,,Diazepam 10 mg 1x à noite
+Regia Maria Ferreira de Araujo ACS Altiplano,820.663.293-04,20260811_162912.jpg,
+Francisca Ferreira de Sousa,704208258348189,20260811_163324.jpg,
+Valdete Ferreira de Sousa,053.238.933-62,20260811_163315.jpg,
+Norberto Freire Viana,767.221.393-87,20260811_163259.jpg,
+Francisca Alves Leandro ACS Dora,885.407.153-68,,Diazepam 10 Mg 3 caixas
+Aline de Almeida Ferreira,814.274.253-53,20260812_093000.jpg,
+Aline de Almeida Ferreira,814.274.253-53,20260812_093840.mp3,
