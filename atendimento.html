@@ -17,6 +17,7 @@
             --success: #28a745;
             --primary: #007bff;
             --overlay: rgba(0,0,0,0.5);
+            --info-bg: #e9ecef;
         }
 
         [data-theme="dark"] {
@@ -26,6 +27,7 @@
             --border-color: #333333;
             --tab-inactive: #2c2c2c;
             --overlay: rgba(0,0,0,0.8);
+            --info-bg: #2a2a2a;
         }
 
         * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
@@ -41,6 +43,33 @@
         }
 
         h1 { text-align: center; font-size: 1.2rem; margin-bottom: 10px; opacity: 0.7; }
+
+        /* Painel da Regra 60/40 */
+        .ratio-panel {
+            background-color: var(--info-bg);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+        }
+        .ratio-panel-stats {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+        .ratio-panel-recommendation {
+            font-weight: bold;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .rec-agendado { background-color: rgba(0, 123, 255, 0.15); color: #0056b3; }
+        .rec-espontanea { background-color: rgba(255, 193, 7, 0.2); color: #856404; }
+        .rec-balanced { background-color: rgba(40, 167, 69, 0.15); color: #155724; }
 
         /* Menu de Configurações */
         .menu-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
@@ -64,14 +93,14 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 10px;
-            width: 220px;
+            width: 240px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
         .menu-options.active { display: block; }
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 15px;
+            padding: 12px 15px;
             cursor: pointer;
             border-radius: 8px;
             font-weight: 600;
@@ -149,6 +178,16 @@
         
         .patient-info { flex-grow: 1; cursor: pointer; padding-right: 10px; }
         .patient-info span { font-size: 1.1rem; font-weight: bold; }
+        .patient-type {
+            font-size: 0.75rem;
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: var(--border-color);
+            margin-left: 5px;
+            vertical-align: middle;
+            font-weight: normal;
+        }
 
         .order-controls { display: flex; flex-direction: column; gap: 4px; }
         .btn-order {
@@ -225,6 +264,9 @@
     <div class="menu-container">
         <button class="main-menu-btn" onclick="toggleMenu()">⚙️</button>
         <div class="menu-options" id="menuOptions">
+            <div class="menu-item" onclick="toggleRatioRule()">
+                <span id="ruleIcon">📏</span>&nbsp; <span id="ruleLabel">Regra 60/40: On</span>
+            </div>
             <div class="menu-item" onclick="toggleTheme()">
                 <span id="themeIcon">🌙</span>&nbsp; Trocar Tema
             </div>
@@ -246,7 +288,8 @@
 const queues = ['medica', 'vacinas', 'enfermeira', 'psicologa', 'nutricionista', 'dentista', 'novo1', 'novo2'];
 let currentActiveTab = 'medica';
 let queueCounters = {};
-let selectedItem = null; // Armazena o item selecionado para o modal
+let selectedItem = null;
+let isRuleActive = localStorage.getItem('rule_60_40_active') !== 'false';
 
 queues.forEach(q => queueCounters[q] = { normal: 0, prioridade: 0 });
 
@@ -291,6 +334,7 @@ function renderData(data) {
             queueCounters[q] = data[q].counters;
         }
     });
+    updateRatioPanel();
 }
 
 function init() {
@@ -309,8 +353,21 @@ function init() {
         content.id = q;
         content.className = `tab-content ${index === 0 ? 'active' : ''}`;
         content.innerHTML = `
+            <div class="ratio-panel" id="ratio-panel-${q}" style="display: ${isRuleActive ? 'flex' : 'none'};">
+                <div class="ratio-panel-stats">
+                    <span id="stat-agendados-${q}">Agendados: 0 (0%)</span>
+                    <span id="stat-espontanea-${q}">Demanda: 0 (0%)</span>
+                </div>
+                <div class="ratio-panel-recommendation rec-balanced" id="rec-${q}">
+                    Proporção equilibrada
+                </div>
+            </div>
             <div class="input-section">
                 <input type="text" id="input-${q}" placeholder="Nome do paciente">
+                <select id="type-${q}">
+                    <option value="agendado">Agendado</option>
+                    <option value="espontanea">Demanda Espontânea</option>
+                </select>
                 <select id="prio-${q}">
                     <option value="normal">Normal</option>
                     <option value="prioridade">Prioridade</option>
@@ -321,6 +378,7 @@ function init() {
         `;
         container.appendChild(content);
     });
+    updateRuleUI();
     loadFromLocalStorage();
 }
 
@@ -335,27 +393,48 @@ function toggleTheme() {
     toggleMenu();
 }
 
+function toggleRatioRule() {
+    isRuleActive = !isRuleActive;
+    localStorage.setItem('rule_60_40_active', isRuleActive);
+    updateRuleUI();
+    toggleMenu();
+}
+
+function updateRuleUI() {
+    document.getElementById('ruleLabel').textContent = `Regra 60/40: ${isRuleActive ? 'Ativada' : 'Desativada'}`;
+    queues.forEach(q => {
+        const panel = document.getElementById(`ratio-panel-${q}`);
+        if (panel) panel.style.display = isRuleActive ? 'flex' : 'none';
+    });
+    if (isRuleActive) updateRatioPanel();
+}
+
 function openTab(tabName) {
     currentActiveTab = tabName;
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
     document.getElementById(tabName).classList.add('active');
     document.getElementById(`btn-${tabName}`).classList.add('active');
+    updateRatioPanel();
 }
 
 function addPatient(queueId) {
     const input = document.getElementById(`input-${queueId}`);
     const prio = document.getElementById(`prio-${queueId}`).value;
+    const type = document.getElementById(`type-${queueId}`).value;
     if (!input.value.trim()) return;
 
     queueCounters[queueId][prio]++;
     const senha = `${queueCounters[queueId][prio]}${prio[0].toUpperCase()}`;
+    const typeLabel = type === 'agendado' ? 'Agendado' : 'Demanda';
     
     const li = document.createElement('li');
     li.className = `queue-item ${prio}`;
+    li.setAttribute('data-type', type);
     li.innerHTML = `
         <div class="patient-info" onclick="openModal(this.closest('.queue-item'))">
             <span data-senha="${senha}">${senha} - ${input.value}</span>
+            <span class="patient-type">${typeLabel}</span>
         </div>
         <div class="order-controls">
             <button class="btn-order" onclick="moveUp(this.closest('.queue-item'))">▲</button>
@@ -366,6 +445,52 @@ function addPatient(queueId) {
     document.getElementById(`list-${queueId}`).prepend(li);
     input.value = '';
     saveToLocalStorage();
+    updateRatioPanel();
+}
+
+/* CÁLCULO E PAINEL DA REGRA 60/40 */
+function updateRatioPanel() {
+    if (!isRuleActive) return;
+
+    const list = document.getElementById(`list-${currentActiveTab}`);
+    if (!list) return;
+
+    const activeItems = Array.from(list.querySelectorAll('.queue-item:not(.atendido)'));
+    let totalAgendados = 0;
+    let totalEspontanea = 0;
+
+    activeItems.forEach(item => {
+        const type = item.getAttribute('data-type') || 'agendado';
+        if (type === 'agendado') totalAgendados++;
+        else totalEspontanea++;
+    });
+
+    const total = totalAgendados + totalEspontanea;
+    const percAgendados = total > 0 ? Math.round((totalAgendados / total) * 100) : 0;
+    const percEspontanea = total > 0 ? Math.round((totalEspontanea / total) * 100) : 0;
+
+    document.getElementById(`stat-agendados-${currentActiveTab}`).innerText = `Agendados: ${totalAgendados} (${percAgendados}%)`;
+    document.getElementById(`stat-espontanea-${currentActiveTab}`).innerText = `Demanda: ${totalEspontanea} (${percEspontanea}%)`;
+
+    const recBox = document.getElementById(`rec-${currentActiveTab}`);
+    recBox.className = 'ratio-panel-recommendation';
+
+    if (total === 0) {
+        recBox.innerText = 'Fila vazia - Adicione pacientes';
+        recBox.classList.add('rec-balanced');
+    } else {
+        // Se a porcentagem de agendados estiver abaixo da meta (60%), recomenda-se adicionar Agendado
+        if (percAgendados < 60) {
+            recBox.innerText = '⚠️ Desequilíbrio: Adicione AGENDADO a seguir';
+            recBox.classList.add('rec-agendado');
+        } else if (percEspontanea < 40) {
+            recBox.innerText = '⚠️ Desequilíbrio: Adicione DEMANDA ESPONTÂNEA a seguir';
+            recBox.classList.add('rec-espontanea');
+        } else {
+            recBox.innerText = '✅ Fila equilibrada (Metas: 60% Agendados / 40% Demanda)';
+            recBox.classList.add('rec-balanced');
+        }
+    }
 }
 
 /* FUNÇÕES DO MODAL */
@@ -385,6 +510,7 @@ function actionAtendido() {
     if (selectedItem) {
         selectedItem.classList.toggle('atendido');
         saveToLocalStorage();
+        updateRatioPanel();
         closeModal();
     }
 }
@@ -393,6 +519,7 @@ function actionApagar() {
     if (selectedItem && confirm("Deseja excluir este paciente?")) {
         selectedItem.remove();
         saveToLocalStorage();
+        updateRatioPanel();
         closeModal();
     }
 }
@@ -405,7 +532,7 @@ function actionEditar() {
     const senha = span.getAttribute('data-senha');
     const nameOnly = currentText.split(' - ')[1];
     
-    closeModal(); // Fecha o modal para focar no input
+    closeModal();
 
     const input = document.createElement('input');
     input.className = 'editable-name';
@@ -448,6 +575,7 @@ function clearCurrentQueue() {
         queueCounters[currentActiveTab] = { normal: 0, prioridade: 0 };
         document.getElementById(`list-${currentActiveTab}`).innerHTML = '';
         saveToLocalStorage();
+        updateRatioPanel();
         toggleMenu();
     }
 }
@@ -459,6 +587,7 @@ function clearAllQueues() {
             document.getElementById(`list-${q}`).innerHTML = '';
         });
         saveToLocalStorage();
+        updateRatioPanel();
         toggleMenu();
     }
 }
@@ -467,7 +596,6 @@ window.onclick = (e) => {
     if (!e.target.matches('.main-menu-btn')) {
         document.getElementById('menuOptions').classList.remove('active');
     }
-    // Fecha modal se clicar fora da caixa branca
     if (e.target.classList.contains('modal-overlay')) {
         closeModal();
     }
