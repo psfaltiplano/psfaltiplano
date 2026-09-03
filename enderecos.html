@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENDEREÇOS MUNICÍPIO</title>
+    <style>
+        /* Configurações estritas para A4 */
+        @page {
+            size: A4 portrait;
+            margin: 10mm 12mm;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #000000;
+            background-color: #e0e0e0;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Simulação da página A4 em tela */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            background-color: #ffffff;
+            padding: 10mm 12mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Barra de controle */
+        .actions-bar {
+            width: 210mm;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-print {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-print:hover {
+            background-color: #333333;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .header p {
+            margin: 2px 0 0 0;
+            font-size: 11pt;
+            font-weight: 400;
+        }
+
+        /* Container Grid 2x2 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .title {
+            font-size: 13.5pt;
+            font-weight: 800;
+            color: #000000;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            line-height: 1.25;
+            border-bottom: 1px solid #000000;
+            padding-bottom: 6px;
+        }
+
+        .badge {
+            display: inline-block;
+            border: 1.5px solid #000000;
+            color: #000000;
+            font-size: 9.5pt;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .detail {
+            margin: 6px 0;
+            color: #000000;
+            font-size: 11.5pt;
+            line-height: 1.4;
+        }
+
+        .obs-box {
+            border: 1.5px dashed #000000;
+            border-radius: 5px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            font-size: 10.5pt;
+            color: #000000;
+            line-height: 1.35;
+            background-color: #fafafa;
+        }
+
+        /* Seção do QR Code expandida */
+        .card-qr {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #000000;
+        }
+
+        .qr-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .qr-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-qr span {
+            display: block;
+            font-size: 8.5pt;
+            color: #000000;
+            margin-top: 6px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 8px;
+            margin-top: 8px;
+            border-top: 1px solid #000000;
+            font-size: 9pt;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        /* Regras de impressão PDF */
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+
+            .actions-bar {
+                display: none;
+            }
+
+            .page {
+                width: 100%;
+                height: 100vh;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="actions-bar">
+        <button class="btn-print" onclick="window.print()">Salvar como PDF / Imprimir</button>
+    </div>
+
+    <div class="page">
+        <div class="header">
+            <h1>ENDEREÇOS MUNICÍPIO</h1>
+            <p>Unidades de Saúde e Atendimento Público</p>
+        </div>
+
+        <div class="grid-container">
+            <!-- 1. CAF -->
+            <div class="card">
+                <div class="card-content">
+                    <div>
+                        <div class="title">CAF - Central de Abastecimento Farmacêutico</div>
+                        <div class="detail"><strong>Endereço:</strong> Rua Júlio Cavalcante, Nº 721 — Bairro Planalto</div>
+                    </div>
+                    <div class="obs-box">
+                        <strong>Ponto de Referência:</strong> Indo pela 13 de Maio, vire à direita após a loja de construção <em>Iguatu Tend Tudo</em>.
+                    </div>
+                </div>
+                <div class="card-qr">
+                    <div class="qr-container">
+                        <img src="logos/qrcode01.jpg" alt="QR Code CAF" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\' viewBox=\'0 0 120 120\'><rect width=\'120\' height=\'120\' fill=\'%23eee\'/><text x=\'50%\' y=\'50%\' font-size=\'11\' text-anchor=\'middle\' fill=\'%23888\'>QR Code 01</text></svg>'">
+                    </div>
+                    <span>ABRIR NO MAPA</span>
+                </div>
+            </div>
+
+            <!-- 2. SMS -->
+            <div class="card">
+                <div class="card-content">
+                    <div>
+                        <div class="title">SMS - Secretaria Municipal de Saúde</div>
+                        <div class="detail"><strong>Endereço:</strong> Rua Wilson Roriz, S/N — Bairro Santo Antônio</div>
+                    </div>
+                    <div class="obs-box">
+                        <strong>Ponto de Referência:</strong> Indo pela Dário Rabêlo, vire à direita após a loja de construção <em>SF Construções</em>.
+                    </div>
+                </div>
+                <div class="card-qr">
+                    <div class="qr-container">
+                        <img src="logos/qrcode02.jpg" alt="QR Code SMS" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\' viewBox=\'0 0 120 120\'><rect width=\'120\' height=\'120\' fill=\'%23eee\'/><text x=\'50%\' y=\'50%\' font-size=\'11\' text-anchor=\'middle\' fill=\'%23888\'>QR Code 02</text></svg>'">
+                    </div>
+                    <span>ABRIR NO MAPA</span>
+                </div>
+            </div>
+
+            <!-- 3. CAPS III -->
+            <div class="card">
+                <div class="card-content">
+                    <div>
+                        <div class="title">CAPS III - Medicamentos Controle Especial</div>
+                        <div class="detail"><strong>Endereço:</strong> Rua Vinte e Sete de Novembro, Nº 569 — Alto do Jucá</div>
+                    </div>
+                    <div class="obs-box">
+                        <strong>Ponto de Referência:</strong> Por trás da Assistência Social (conhecido como CSU), próximo à escola de música popular Humberto Teixeira.
+                    </div>
+                </div>
+                <div class="card-qr">
+                    <div class="qr-container">
+                        <img src="logos/qrcode03.jpg" alt="QR Code CAPS III" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\' viewBox=\'0 0 120 120\'><rect width=\'120\' height=\'120\' viewBox=\'0 0 120 120\' fill=\'%23eee\'/><text x=\'50%\' y=\'50%\' font-size=\'11\' text-anchor=\'middle\' fill=\'%23888\'>QR Code 03</text></svg>'">
+                    </div>
+                    <span>ABRIR NO MAPA</span>
+                </div>
+            </div>
+
+            <!-- 4. UBS ERNANI BARREIRA -->
+            <div class="card">
+                <div class="card-content">
+                    <div>
+                        <div class="title">UBS Ernani Barreira</div>
+                        <span class="badge">Atendimento: Segunda a Sexta, das 17h às 21h</span>
+                        <div class="detail"><strong>Endereço:</strong> Rua Márcio Nogueira, Nº 92 — Bairro Flores</div>
+                    </div>
+                    <div class="obs-box">
+                        <strong>Ponto de Referência:</strong> Bairro Flores (antiga Estados Unidos), na mesma rua do Supermercado Alexandre da Estados Unidos.
+                    </div>
+                </div>
+                <div class="card-qr">
+                    <div class="qr-container">
+                        <img src="logos/qrcode04.jpg" alt="QR Code UBS" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\' viewBox=\'0 0 120 120\'><rect width=\'120\' height=\'120\' fill=\'%23eee\'/><text x=\'50%\' y=\'50%\' font-size=\'11\' text-anchor=\'middle\' fill=\'%23888\'>QR Code 04</text></svg>'">
+                    </div>
+                    <span>ABRIR NO MAPA</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Aponte a câmera do seu celular para o QR Code para abrir a localização exata no Google Maps.
+        </div>
+    </div>
+
+</body>
+</html>
