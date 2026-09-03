@@ -5,62 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENDEREÇOS MUNICÍPIO</title>
     <style>
-        /* Configurações estritas para A4 */
+        /* Configurações estritas de página A4 */
         @page {
             size: A4 portrait;
-            margin: 10mm 12mm;
+            margin: 0; /* Margem zero na página para controlar internamente no CSS */
         }
 
         *, *::before, *::after {
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 0;
+            background-color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #000000;
-            background-color: #e0e0e0;
-            margin: 0;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        /* Simulação da página A4 em tela */
+        /* Container principal que ocupa a folha A4 completa */
         .page {
             width: 210mm;
             height: 297mm;
-            background-color: #ffffff;
             padding: 10mm 12mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-        }
-
-        /* Barra de controle */
-        .actions-bar {
-            width: 210mm;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .btn-print {
-            background-color: #000000;
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-print:hover {
-            background-color: #333333;
         }
 
         .header {
@@ -84,7 +58,7 @@
             font-weight: 400;
         }
 
-        /* Container Grid 2x2 */
+        /* Grid 2x2 preenchendo a área útil */
         .grid-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -152,7 +126,7 @@
             background-color: #fafafa;
         }
 
-        /* Seção do QR Code expandida */
+        /* Seção do QR Code */
         .card-qr {
             text-align: center;
             margin-top: 12px;
@@ -196,31 +170,19 @@
             color: #000000;
         }
 
-        /* Regras de impressão PDF */
+        /* Ajustes específicos para o diálogo de impressão */
         @media print {
-            body {
-                background-color: #ffffff;
-                padding: 0;
+            html, body {
+                width: 210mm;
+                height: 297mm;
             }
-
-            .actions-bar {
-                display: none;
-            }
-
             .page {
-                width: 100%;
-                height: 100vh;
-                box-shadow: none;
-                padding: 0;
+                height: 100%;
             }
         }
     </style>
 </head>
 <body>
-
-    <div class="actions-bar">
-        <button class="btn-print" onclick="window.print()">Salvar como PDF / Imprimir</button>
-    </div>
 
     <div class="page">
         <div class="header">
@@ -280,7 +242,7 @@
                 </div>
                 <div class="card-qr">
                     <div class="qr-container">
-                        <img src="logos/qrcode03.jpg" alt="QR Code CAPS III" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\' viewBox=\'0 0 120 120\'><rect width=\'120\' height=\'120\' viewBox=\'0 0 120 120\' fill=\'%23eee\'/><text x=\'50%\' y=\'50%\' font-size=\'11\' text-anchor=\'middle\' fill=\'%23888\'>QR Code 03</text></svg>'">
+                        <img src="logos/qrcode03.jpg" alt="QR Code CAPS III" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\' viewBox=\'0 0 120 120\'><rect width=\'120\' height=\'120\' fill=\'%23eee\'/><text x=\'50%\' y=\'50%\' font-size=\'11\' text-anchor=\'middle\' fill=\'%23888\'>QR Code 03</text></svg>'">
                     </div>
                     <span>ABRIR NO MAPA</span>
                 </div>
