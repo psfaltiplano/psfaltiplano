@@ -4,55 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Senhas A4</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
-        
+        /* Configuração de página A4 nativa */
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 0;
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #000000;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Painel de Controles (Escondido na Impressão) */
         .controls { 
-            background: white; padding: 20px; border-radius: 12px; 
-            max-width: 1000px; margin: 0 auto 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; justify-content: center;
+            background: #f4f7f6;
+            padding: 15px;
+            border-bottom: 2px solid #ccc;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            justify-content: center;
+            flex-wrap: wrap;
         }
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 0.8rem; font-weight: bold; color: #666; }
-        input, select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
-        
-        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.2s; }
-        .btn-update { background: #27ae60; color: white; }
-        .btn-pdf { background: #2980b9; color: white; }
 
-        /* Área da Folha A4 */
+        .input-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+        }
+
+        label { 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+            color: #444; 
+        }
+
+        input, select { 
+            padding: 6px 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-size: 14px;
+        }
+
+        .btn-update { 
+            padding: 8px 16px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            background: #27ae60; 
+            color: white; 
+            font-size: 14px;
+        }
+
+        .btn-update:hover { 
+            background: #219150; 
+        }
+
+        /* Container da Folha A4 com Margem de Segurança */
         .a4-page {
-            width: 210mm; height: 297mm; background: white; margin: 0 auto;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1); overflow: hidden;
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 5mm; /* Margem de segurança contra cortes de impressão */
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Grid ajustado dinamicamente para a área segura */
         #table-container {
-            display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(10, 1fr);
-            border: 2px solid black; transform-origin: center;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            border: 1px solid #000;
         }
 
         .cell {
-            border: 2px solid black; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            width: 42mm; height: 29.7mm; box-sizing: border-box; text-align: center;
-            position: relative; margin: -1px;
+            border: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 2px;
+            background: #ffffff;
+            overflow: hidden;
         }
 
         /* Estilo para Prioridade */
-        .cell.priority { background-color: #f9f9f9; }
-        .cell.priority .number { color: #d32f2f; }
-        .cell.priority::after {
-            content: "PRIORIDADE"; position: absolute; top: 5px;
-            font-size: 7pt; font-weight: bold; border: 1px solid #d32f2f;
-            padding: 1px 4px; color: #d32f2f; border-radius: 3px;
+        .cell.priority { 
+            background-color: #fcfcfc; 
         }
 
-        .number { font-size: 30pt; font-weight: 800; line-height: 1; }
-        .label { font-size: 9pt; font-weight: 600; margin-top: 4px; text-transform: uppercase; color: #444; }
+        .cell.priority .number { 
+            color: #d32f2f; 
+        }
 
-        @media print { .controls { display: none; } .a4-page { box-shadow: none; } }
+        .cell.priority::after {
+            content: "PRIORIDADE";
+            position: absolute;
+            top: 2px;
+            font-size: 6pt;
+            font-weight: bold;
+            border: 1px solid #d32f2f;
+            padding: 0px 3px;
+            color: #d32f2f;
+            border-radius: 2px;
+        }
+
+        .number { 
+            font-size: 24pt; 
+            font-weight: 800; 
+            line-height: 1; 
+        }
+
+        .label { 
+            font-size: 8pt; 
+            font-weight: 700; 
+            margin-top: 2px; 
+            text-transform: uppercase; 
+            color: #222; 
+        }
+
+        /* Regras estritas de Impressão */
+        @media print {
+            .controls { 
+                display: none !important; 
+            }
+
+            html, body, .a4-page {
+                width: 210mm;
+                height: 297mm;
+            }
+        }
     </style>
 </head>
 <body>
@@ -67,38 +166,25 @@
         </div>
         <div class="input-group">
             <label>Nº Inicial:</label>
-            <input type="number" id="startNum" value="1" style="width: 60px;">
+            <input type="number" id="startNum" value="1" style="width: 70px;">
         </div>
         <div class="input-group">
             <label>Texto:</label>
             <input type="text" id="textLabel" value="Atendimento">
         </div>
-        <div class="input-group">
-            <label>Escala: <span id="zoomVal">100</span>%</label>
-            <input type="range" id="zoomSlider" min="30" max="100" value="100">
-        </div>
-        <button class="btn-update" onclick="generateGrid()">Atualizar</button>
-        <button class="btn-pdf" onclick="downloadPDF()">Gerar PDF</button>
+        <button class="btn-update" onclick="generateGrid()">Atualizar Tabela</button>
     </div>
 
-    <div class="a4-page" id="page">
+    <div class="a4-page">
         <div id="table-container"></div>
     </div>
 
     <script>
-        const slider = document.getElementById('zoomSlider');
-        const zoomDisplay = document.getElementById('zoomVal');
-        const table = document.getElementById('table-container');
-
-        slider.oninput = function() {
-            zoomDisplay.innerText = this.value;
-            table.style.transform = `scale(${this.value / 100})`;
-        };
-
         function generateGrid() {
-            const startNum = parseInt(document.getElementById('startNum').value);
+            const startNum = parseInt(document.getElementById('startNum').value) || 1;
             const labelText = document.getElementById('textLabel').value;
             const typeMode = document.getElementById('typeMode').value;
+            const table = document.getElementById('table-container');
             
             table.innerHTML = ''; 
 
@@ -109,7 +195,6 @@
                 const cell = document.createElement('div');
                 cell.className = `cell ${isPriority ? 'priority' : ''}`;
                 
-                // Se for prioridade, adiciona o prefixo "P-"
                 const finalNum = isPriority ? `P-${numVal}` : numVal;
 
                 cell.innerHTML = `
@@ -118,16 +203,6 @@
                 `;
                 table.appendChild(cell);
             }
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('page');
-            html2pdf().set({
-                margin: 0,
-                filename: `senhas-${document.getElementById('typeMode').value}.pdf`,
-                html2canvas: { scale: 3 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(element).save();
         }
 
         generateGrid();
