@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de QR Code</title>
+    <!-- Biblioteca leve para geração de QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Painel de controles (oculto na impressão) */
+        .controls {
+            background: #ffffff;
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input[type="text"], textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 70px;
+        }
+
+        .btn-print {
+            padding: 10px 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            background: #27ae60;
+            color: white;
+            font-size: 14px;
+            align-self: flex-start;
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background: #219150;
+        }
+
+        /* Cartão de exibição do QR Code */
+        .preview-area {
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-card {
+            background: #ffffff;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 24px;
+            width: 300px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .qr-title {
+            font-size: 14pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .qr-box {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-caption {
+            font-size: 9pt;
+            font-weight: bold;
+            color: #555;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        /* Regras para Impressão Nativa (Ctrl + P) */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            .preview-area {
+                margin-top: 20mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <div class="input-group">
+            <label for="titleInput">Título do Cartão:</label>
+            <input type="text" id="titleInput" value="Acesse o Link" placeholder="Ex: Wi-Fi, Endereço, Nome..." oninput="updateQRCode()">
+        </div>
+        
+        <div class="input-group">
+            <label for="textInput">Conteúdo do QR Code (URL ou Texto):</label>
+            <textarea id="textInput" placeholder="Digite ou cole qualquer link/texto aqui..." oninput="updateQRCode()">https://google.com</textarea>
+        </div>
+
+        <button class="btn-print" onclick="window.print()">Imprimir / Salvar PDF</button>
+    </div>
+
+    <div class="preview-area">
+        <div class="qr-card">
+            <h2 class="qr-title" id="cardTitle">Acesse o Link</h2>
+            <div class="qr-box" id="qrcode"></div>
+            <p class="qr-caption">APONTE A CÂMERA DO CELULAR</p>
+        </div>
+    </div>
+
+    <script>
+        // Inicializa o objeto QR Code
+        const qrcode = new QRCode(document.getElementById("qrcode"), {
+            width: 200,
+            height: 200,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        function updateQRCode() {
+            const textValue = document.getElementById("textInput").value.trim();
+            const titleValue = document.getElementById("titleInput").value.trim();
+            
+            // Atualiza o título na tela
+            document.getElementById("cardTitle").innerText = titleValue || "QR CODE";
+
+            // Se o campo estiver vazio, gera um QR básico com texto padrão
+            if (textValue === "") {
+                qrcode.makeCode(" ");
+            } else {
+                qrcode.makeCode(textValue);
+            }
+        }
+
+        // Gera o primeiro QR Code ao carregar a página
+        updateQRCode();
+    </script>
+</body>
+</html>
