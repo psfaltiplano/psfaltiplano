@@ -455,7 +455,8 @@ function updateRatioPanel() {
     const list = document.getElementById(`list-${currentActiveTab}`);
     if (!list) return;
 
-    const activeItems = Array.from(list.querySelectorAll('.queue-item:not(.atendido)'));
+    // A alteração foi feita aqui: removido o ":not(.atendido)" para considerar todos os pacientes da lista
+    const activeItems = Array.from(list.querySelectorAll('.queue-item'));
     let totalAgendados = 0;
     let totalEspontanea = 0;
 
@@ -479,7 +480,6 @@ function updateRatioPanel() {
         recBox.innerText = 'Fila vazia - Adicione pacientes';
         recBox.classList.add('rec-balanced');
     } else {
-        // Se a porcentagem de agendados estiver abaixo da meta (60%), recomenda-se adicionar Agendado
         if (percAgendados < 60) {
             recBox.innerText = '⚠️ Desequilíbrio: Adicione AGENDADO a seguir';
             recBox.classList.add('rec-agendado');
